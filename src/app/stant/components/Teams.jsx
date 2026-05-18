@@ -73,13 +73,9 @@ export default function Teams() {
   }, [idx]);
 
   return (
-    <div className="relative flex-1 min-h-0 flex flex-col px-6 xl:px-10 pb-6 xl:pb-8 gap-4 xl:gap-5">
-      {/* ─── LOGO STRIP + NAV ─────────────────────────────────────── */}
-      <div className="flex items-center gap-3">
-        <div
-          ref={stripRef}
-          role="tablist"
-          aria-label="Ekipler"
+    <div className="relative flex-1 min-h-0 flex flex-col px-4 md:px-6 xl:px-10 pb-4 md:pb-6 xl:pb-8 short-820:pb-3 short-700:pb-2 gap-3 md:gap-4 xl:gap-5 short-820:gap-2.5 short-700:gap-2">
+      <div className="flex items-center gap-2 md:gap-3">
+        <div ref={stripRef} role="tablist" aria-label="Ekipler"
           className="flex-1 min-w-0 flex items-stretch gap-2 overflow-x-auto scroll-smooth no-scrollbar"
         >
           {TEAMS.map((t, i) => (
@@ -89,11 +85,11 @@ export default function Teams() {
           ))}
         </div>
 
-        <div className="flex items-center gap-1.5 shrink-0 pl-3 ml-1 border-l border-white/8 self-stretch">
+        <div className="flex items-center gap-1 md:gap-1.5 shrink-0 pl-2 md:pl-3 md:ml-1 border-l border-white/8 self-stretch">
           <button
             onClick={() => setAuto((a) => !a)}
             title={auto ? "Otomatik döngüyü durdur (P)" : "Otomatik döngü (P)"}
-            className={`flex items-center justify-center w-11 h-11 rounded-xl border transition-colors ${
+            className={`flex items-center justify-center w-10 h-10 md:w-11 md:h-11 short-940:w-9 short-940:h-9 short-820:w-8 short-820:h-8 short-700:w-7 short-700:h-7 rounded-xl border transition-colors ${
               auto
                 ? "border-skylab-500/40 text-skylab-500 bg-skylab-500/10"
                 : "border-white/10 text-neutral-400 hover:text-white hover:border-white/20 hover:bg-white/5"
@@ -101,30 +97,24 @@ export default function Teams() {
           >
             {auto ? <Pause size={14} strokeWidth={2} /> : <Play size={14} strokeWidth={2} />}
           </button>
-          <button
-            onClick={() => go(-1)}
-            title="Önceki (←)"
-            className="flex items-center justify-center w-11 h-11 rounded-xl border border-white/10 text-neutral-400 hover:text-white hover:border-white/20 hover:bg-white/5 transition-colors"
+          <button onClick={() => go(-1)} title="Önceki (←)"
+            className="flex items-center justify-center w-10 h-10 md:w-11 md:h-11 short-940:w-9 short-940:h-9 short-820:w-8 short-820:h-8 short-700:w-7 short-700:h-7 rounded-xl border border-white/10 text-neutral-400 hover:text-white hover:border-white/20 hover:bg-white/5 transition-colors"
           >
             <ArrowLeft size={15} strokeWidth={2} />
           </button>
-          <button
-            onClick={() => go(1)}
-            title="Sonraki (→)"
-            className="flex items-center justify-center w-11 h-11 rounded-xl border border-white/10 text-neutral-400 hover:text-white hover:border-white/20 hover:bg-white/5 transition-colors"
+          <button onClick={() => go(1)} title="Sonraki (→)"
+            className="flex items-center justify-center w-10 h-10 md:w-11 md:h-11 short-940:w-9 short-940:h-9 short-820:w-8 short-820:h-8 short-700:w-7 short-700:h-7 rounded-xl border border-white/10 text-neutral-400 hover:text-white hover:border-white/20 hover:bg-white/5 transition-colors"
           >
             <ArrowRight size={15} strokeWidth={2} />
           </button>
         </div>
       </div>
 
-      {/* ─── SHOWCASE ─────────────────────────────────────────────── */}
-      <div className="relative flex-1 min-h-0 overflow-hidden">
+      <div className="relative flex-1 min-h-[60dvh] overflow-hidden">
         <Showcase team={team} dir={dir} />
       </div>
 
-      {/* ─── STATUS BAR ───────────────────────────────────────────── */}
-      <div className="flex items-center gap-4 font-mono text-[10.5px] text-neutral-600 tracking-[0.06em] uppercase">
+      <div className="flex items-center gap-4 short-820:gap-3 short-700:gap-2 font-mono text-[10.5px] short-700:text-[9.5px] text-neutral-600 tracking-[0.06em] uppercase">
         <span>SKY LAB · AR-GE STANT</span>
         <span className="h-3 w-px bg-neutral-800" />
         <span className="flex items-center gap-1.5">

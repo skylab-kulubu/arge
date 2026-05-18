@@ -69,20 +69,15 @@ export default function ShowcaseBody({ team }) {
 
   return (
     <div className="relative h-full grid grid-cols-1 lg:grid-cols-[1.35fr_1fr] min-h-0">
-      {/* ─── LEFT: identity + story ─────────────────────────────────── */}
-      <section
-        className="flex flex-col px-7 xl:px-10 py-7 xl:py-8 min-w-0 border-b lg:border-b-0 lg:border-r"
+      <section className="flex flex-col px-5 md:px-7 xl:px-10 py-5 md:py-7 xl:py-8 min-w-0 border-b lg:border-b-0 lg:border-r"
         style={{ borderColor: dimRing(tone.ring, 0.16) }}
       >
-        <div className="flex items-center gap-3 flex-wrap mb-5">
+        <div className="flex items-center gap-2 md:gap-3 flex-wrap mb-4 md:mb-5">
           <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-neutral-500">
             {num} / {pad(TEAMS.length)} · EKİP
           </span>
           {team.topics?.map((t) => (
-            <span
-              key={t}
-              className="font-mono text-[10px] tracking-[0.16em] uppercase text-neutral-500 before:content-['·'] before:mr-3 before:text-neutral-700"
-            >
+            <span key={t} className="font-mono text-[10px] tracking-[0.16em] uppercase text-neutral-500 before:content-['·'] before:mr-3 before:text-neutral-700">
               {t}
             </span>
           ))}
@@ -90,24 +85,21 @@ export default function ShowcaseBody({ team }) {
           <RecruitingChip recruiting={recruiting} />
         </div>
 
-        <div className="flex items-start gap-5">
-          <div
-            className="flex items-center justify-center w-16 h-16 xl:w-20 xl:h-20 rounded-2xl border shrink-0"
-            style={{ borderColor: tone.ring, background: tone.chip, color: tone.icon }}
-          >
-            <Icon size={32} strokeWidth={1.3} />
+        <div className="flex items-start gap-4 md:gap-5">
+          <div className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 xl:w-20 xl:h-20 rounded-xl md:rounded-2xl border shrink-0" style={{ borderColor: tone.ring, background: tone.chip, color: tone.icon }}>
+            <Icon className="w-6 h-6 md:w-8 md:h-8" strokeWidth={1.3} />
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="text-white text-[44px] xl:text-[56px] font-bold tracking-tight leading-[0.98]">
+            <h2 className="text-white text-[32px] md:text-[40px] lg:text-[48px] xl:text-[56px] font-bold tracking-tight leading-[0.98]">
               {team.name}
             </h2>
-            <p className="mt-3 text-neutral-300 text-[15px] xl:text-[16px] leading-[1.55] max-w-[62ch]">
+            <p className="mt-2 md:mt-3 text-neutral-300 text-[13.5px] md:text-[15px] xl:text-[16px] leading-[1.55] max-w-[62ch]">
               {team.desc}
             </p>
           </div>
         </div>
 
-        <div className="my-6 flex items-center gap-3">
+        <div className="my-4 md:my-6 flex items-center gap-3">
           <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-neutral-500 flex items-center gap-1.5">
             <Sparkles size={11} strokeWidth={2} style={{ color: tone.icon }} />
             Ekip anlatıyor
@@ -115,12 +107,11 @@ export default function ShowcaseBody({ team }) {
           <span className="h-px flex-1" style={{ background: dimRing(tone.ring, 0.18) }} />
         </div>
 
-        <p className="text-neutral-200 text-[14.5px] xl:text-[15.5px] leading-[1.75] max-w-[68ch]">
+        <p className="text-neutral-200 text-[13px] md:text-[14.5px] xl:text-[15.5px] leading-[1.65] md:leading-[1.75] max-w-[68ch]">
           {team.longDesc}
         </p>
 
-        <div className="mt-auto pt-7 grid grid-cols-[auto_1fr] gap-x-7 gap-y-4 items-start">
-          {/* leads */}
+        <div className="mt-auto pt-5 md:pt-7 grid grid-cols-1 md:grid-cols-[auto_1fr] gap-x-5 md:gap-x-7 gap-y-3 md:gap-y-4 items-start">
           <div className="flex flex-col gap-2 min-w-0">
             <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-neutral-500">
               Ekip {team.leads.length > 1 ? "Liderleri" : "Lideri"}
@@ -159,7 +150,6 @@ export default function ShowcaseBody({ team }) {
             </div>
           </div>
 
-          {/* stack */}
           <div className="flex flex-col gap-2 min-w-0">
             <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-neutral-500 flex items-center gap-2">
               <span>Stack</span>
@@ -187,9 +177,8 @@ export default function ShowcaseBody({ team }) {
         </div>
       </section>
 
-      {/* ─── RIGHT: works + apply ───────────────────────────────────── */}
-      <section className="relative flex flex-col px-6 xl:px-8 py-7 xl:py-8 min-w-0 min-h-0">
-        <div className="flex items-center gap-3 mb-4">
+      <section className="relative flex flex-col px-5 md:px-6 xl:px-8 py-5 md:py-7 xl:py-8 min-w-0 min-h-0">
+        <div className="flex items-center gap-3 mb-1 md:mb-4">
           <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-neutral-500 flex items-center gap-1.5">
             <Trophy size={11} strokeWidth={2} style={{ color: tone.icon }} />
             Öne çıkan işler
@@ -278,15 +267,11 @@ export default function ShowcaseBody({ team }) {
               <p className="text-neutral-300 text-[12.5px] leading-[1.6]">{team.recruitingFor}</p>
               <div className="mt-auto">
                 {recruiting ? (
-                  <a
-                    href={team.applyUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <a href={team.applyUrl} target="_blank" rel="noopener noreferrer"
                     className="group/cta flex items-stretch rounded-md border overflow-hidden"
                     style={{ borderColor: tone.ring }}
                   >
-                    <span
-                      className="flex-1 flex items-center justify-center py-2 px-3.5 font-medium text-[12.5px] tracking-tight"
+                    <span className="flex-1 flex items-center justify-center py-2 px-3.5 font-medium text-[12.5px] tracking-tight"
                       style={{ background: tone.chip, color: tone.icon }}
                     >
                       Ekibe Başvur · skyl.app/{team.id}
@@ -295,14 +280,10 @@ export default function ShowcaseBody({ team }) {
                       className="relative flex items-center justify-center border-l w-10 shrink-0 overflow-hidden"
                       style={{ background: tone.soft, borderColor: tone.ring, color: tone.icon }}
                     >
-                      <ArrowRight
-                        size={14}
-                        strokeWidth={2}
+                      <ArrowRight size={14} strokeWidth={2}
                         className="absolute transition-all duration-300 ease-out group-hover/cta:translate-x-5 group-hover/cta:opacity-0"
                       />
-                      <ArrowRight
-                        size={14}
-                        strokeWidth={2}
+                      <ArrowRight size={14} strokeWidth={2}
                         className="absolute -translate-x-5 opacity-0 transition-all duration-300 ease-out group-hover/cta:translate-x-0 group-hover/cta:opacity-100"
                       />
                     </span>
@@ -316,17 +297,11 @@ export default function ShowcaseBody({ team }) {
             </div>
 
             {recruiting && (
-              <div
-                className="shrink-0 flex flex-col items-center justify-center gap-1.5 p-3 border-l"
-                style={{ borderColor: tone.ring, background: "rgba(8,7,11,0.45)" }}
-              >
+              <div className="shrink-0 flex flex-col items-center justify-center gap-1.5 p-3 border-l" style={{ borderColor: tone.ring, background: "rgba(8,7,11,0.45)" }}>
                 <div className="rounded-md p-2" style={{ background: "rgba(255,255,255,0.04)" }}>
                   <QRCode value={team.applyUrl} size={104} color={tone.icon} />
                 </div>
-                <span
-                  className="font-mono text-[8.5px] tracking-[0.22em] uppercase flex items-center gap-1"
-                  style={{ color: tone.icon }}
-                >
+                <span className="font-mono text-[8.5px] tracking-[0.22em] uppercase flex items-center gap-1" style={{ color: tone.icon }}>
                   <ScanLine size={9} strokeWidth={2} />
                   telefonla okut
                 </span>

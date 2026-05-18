@@ -33,14 +33,10 @@ export default function Showcase({ team, dir }) {
         boxShadow: `0 0 60px -20px ${tone.glow}, inset 0 0 0 1px ${dimRing(tone.ring, 0.08)}`,
       }}
     >
-      <div
-        aria-hidden
-        className="absolute inset-0 pointer-events-none"
+      <div aria-hidden className="absolute inset-0 pointer-events-none"
         style={{ background: `radial-gradient(50% 60% at 88% 0%, ${tone.glow}, transparent 65%)` }}
       />
-      <div
-        aria-hidden
-        className="absolute top-0 left-0 right-0 h-px pointer-events-none z-10"
+      <div aria-hidden className="absolute top-0 left-0 right-0 h-px pointer-events-none z-10"
         style={{
           background: `linear-gradient(90deg, transparent, ${tone.icon} 50%, transparent)`,
           opacity: 0.6,
@@ -49,21 +45,11 @@ export default function Showcase({ team, dir }) {
 
       <div className="relative flex-1 min-h-0">
         {exiting && (
-          <div
-            key={`exit-${exiting.id}`}
-            data-state="exit"
-            data-dir={dir}
-            className="showcase-content absolute inset-0"
-          >
+          <div key={`exit-${exiting.id}`} data-state="exit" data-dir={dir} className="showcase-content absolute inset-0">
             <ShowcaseBody team={exiting} />
           </div>
         )}
-        <div
-          key={`enter-${active.id}`}
-          data-state="enter"
-          data-dir={dir}
-          className="showcase-content absolute inset-0"
-        >
+        <div key={`enter-${active.id}`} data-state="enter" data-dir={dir} className="showcase-content absolute inset-0">
           <ShowcaseBody team={active} />
         </div>
       </div>

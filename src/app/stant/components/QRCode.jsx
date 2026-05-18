@@ -34,10 +34,6 @@ export default function QRCode({ value, size = 104, color = "rgb(224,200,229)", 
   }, [value, color]);
 
   return (
-    <div
-      style={{ width: size, height: size, background: bg }}
-      className="qr-svg shrink-0"
-      dangerouslySetInnerHTML={{ __html: svg }}
-    />
+    <div style={{ width: size, height: size, background: bg }} className="qr-svg shrink-0" dangerouslySetInnerHTML={{ __html: svg }}/>
   );
 }
