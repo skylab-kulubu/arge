@@ -9,6 +9,8 @@ import { useScrollContainer } from "./utils";
 const PIN_VH_PER_TAB = 60;
 
 const pad = (n) => String(n).padStart(2, "0");
+const isRecruiting = (t) => Boolean(t.recruiting && t.applyUrl);
+const isExternal = (url) => typeof url === "string" && /^https?:\/\//i.test(url);
 
 function RecruitingChip({ recruiting, compact = false }) {
   if (recruiting) {
@@ -42,6 +44,7 @@ function RecruitingChip({ recruiting, compact = false }) {
 function TeamTab({ team, index, isActive, onClick }) {
   const tt = TONE[team.tone];
   const Icon = team.icon;
+  const recruiting = isRecruiting(team);
   return (
     <button role="tab" aria-selected={isActive} onClick={onClick}
       className={`relative w-full flex items-center gap-3 px-3.5 py-3 rounded-lg border text-left transition-colors lg:flex-1 lg:min-h-14.5 ${
@@ -75,7 +78,7 @@ function TeamTab({ team, index, isActive, onClick }) {
           <span className={`text-[13px] leading-tight truncate ${isActive ? "text-white" : "text-neutral-300"}`}>
             {team.name}
           </span>
-          {team.recruiting && (
+          {recruiting && (
             <span
               className="h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0"
               style={{ boxShadow: "0 0 6px rgba(110,231,183,0.7)" }}
@@ -84,7 +87,7 @@ function TeamTab({ team, index, isActive, onClick }) {
           )}
         </span>
         <span className="font-mono text-[10px] text-neutral-600 truncate mt-0.5">
-          {team.recruiting ? "alım açık" : "alım kapalı"}
+          {recruiting ? "alım açık" : "alım kapalı"}
         </span>
       </span>
       <ChevronRight
@@ -140,6 +143,8 @@ function StatusPill({ status }) {
 function TeamPanel({ team, num }) {
   const tone = TONE[team.tone];
   const Icon = team.icon;
+  const recruiting = isRecruiting(team);
+  const external = isExternal(team.applyUrl);
 
   return (
     <motion.div
@@ -175,7 +180,7 @@ function TeamPanel({ team, num }) {
             </span>
           ))}
           <span className="h-px flex-1 bg-neutral-800 min-w-4 sm:min-w-8" />
-          <RecruitingChip recruiting={team.recruiting} />
+          <RecruitingChip recruiting={recruiting} />
         </div>
 
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 md:gap-6">
@@ -220,24 +225,24 @@ function TeamPanel({ team, num }) {
             <div
               className="relative rounded-lg border overflow-hidden flex-1 flex flex-col"
               style={{
-                borderColor: team.recruiting ? tone.ring : "rgba(255,255,255,0.08)",
-                background: team.recruiting ? tone.soft : "rgba(255,255,255,0.02)",
+                borderColor: recruiting ? tone.ring : "rgba(255,255,255,0.08)",
+                background: recruiting ? tone.soft : "rgba(255,255,255,0.02)",
               }}
             >
               <div
                 className="flex items-center justify-between px-3 py-1.5 border-b"
                 style={{
-                  borderColor: team.recruiting ? tone.ring : "rgba(255,255,255,0.06)",
-                  background: team.recruiting ? tone.chip : "transparent",
+                  borderColor: recruiting ? tone.ring : "rgba(255,255,255,0.06)",
+                  background: recruiting ? tone.chip : "transparent",
                 }}
               >
                 <span
                   className="font-mono text-[9.5px] tracking-[0.22em] uppercase font-semibold"
-                  style={{ color: team.recruiting ? tone.icon : "rgb(115,115,115)" }}
+                  style={{ color: recruiting ? tone.icon : "rgb(115,115,115)" }}
                 >
-                  {team.recruiting ? "Açık Pozisyon" : "Alım Kapalı"}
+                  {recruiting ? "Açık Pozisyon" : "Alım Kapalı"}
                 </span>
-                {team.recruiting ? (
+                {recruiting ? (
                   <span className="relative flex h-1.5 w-1.5">
                     <span
                       className="absolute inset-0 rounded-full animate-ping opacity-70"
@@ -259,9 +264,11 @@ function TeamPanel({ team, num }) {
                 </p>
 
                 <div className="mt-auto">
-                  {team.recruiting ? (
+                  {recruiting ? (
                     <a
-                      href="#katil"
+                      href={team.applyUrl}
+                      target={external ? "_blank" : undefined}
+                      rel={external ? "noopener noreferrer" : undefined}
                       className="group/cta flex items-stretch rounded-md border overflow-hidden"
                       style={{ borderColor: tone.ring }}
                     >
@@ -372,7 +379,7 @@ export default function Teams() {
   const scrollContainer = useScrollContainer();
   const pinRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const openCount = TEAMS.filter((t) => t.recruiting).length;
+  const openCount = TEAMS.filter(isRecruiting).length;
   const active = TEAMS[activeIndex];
 
   const { scrollYProgress } = useScroll({

@@ -11,9 +11,8 @@ export const TONE = {
 };
 
 export const STATUS = {
-  yayında:    { label: "yayında",    color: "rgb(167,243,208)", ring: "rgba(110,231,183,0.32)", bg: "rgba(110,231,183,0.10)" },
-  aktif:      { label: "aktif",      color: "rgb(125,211,252)", ring: "rgba(56,189,248,0.32)",  bg: "rgba(56,189,248,0.10)"  },
-  geliştirme: { label: "geliştirme", color: "rgb(253,224,138)", ring: "rgba(252,211,77,0.32)",  bg: "rgba(252,211,77,0.10)"  },
-  araştırma:  { label: "araştırma",  color: "rgb(196,181,253)", ring: "rgba(167,139,250,0.32)", bg: "rgba(167,139,250,0.10)" },
+  kullanımda: { label: "kullanımda", color: "rgb(224,200,229)", ring: "rgba(224,200,229,0.32)", bg: "rgba(224,200,229,0.10)" },
+  geliştirme: { label: "geliştirme", color: "rgb(176,170,238)", ring: "rgba(176,170,238,0.32)", bg: "rgba(176,170,238,0.10)" },
+  araştırma:  { label: "araştırma",  color: "rgb(129,140,248)", ring: "rgba(129,140,248,0.32)", bg: "rgba(129,140,248,0.10)" },
   planlanan:  { label: "planlanan",  color: "rgb(180,180,190)", ring: "rgba(255,255,255,0.14)", bg: "rgba(255,255,255,0.04)" },
 };
