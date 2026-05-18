@@ -179,7 +179,7 @@ function WorksList({ works, tone }) {
   }, [works]);
 
   return (
-    <section ref={sectionRef} className="hidden md:flex flex-col min-w-0">
+    <section ref={sectionRef} className="flex flex-col min-w-0 flex-1 min-h-0">
       <span
         data-header
         className="flex items-center gap-1.5 font-mono text-[9.5px] sm:text-[10px] tracking-[0.18em] uppercase text-neutral-500 mb-2 sm:mb-3"
@@ -269,34 +269,31 @@ function RecruitingBox({ team, tone, recruiting, external }) {
 
     const measure = () => {
       const parentH = parent.clientHeight;
-      let used = 0;
-      let sib = el.previousElementSibling;
-      while (sib) {
-        used += sib.offsetHeight;
-        sib = sib.previousElementSibling;
-      }
-      const gap = 20;
-      const available = parentH - used - gap;
+      const firstSib = parent.firstElementChild;
+      const firstSibH = firstSib && firstSib !== el ? firstSib.offsetHeight : 0;
+      const available = parentH - firstSibH;
       setMinimal(available < 130);
     };
 
     const ro = new ResizeObserver(measure);
     ro.observe(parent);
-    if (el.previousElementSibling) ro.observe(el.previousElementSibling);
+    if (parent.firstElementChild && parent.firstElementChild !== el) {
+      ro.observe(parent.firstElementChild);
+    }
     measure();
     return () => ro.disconnect();
   }, [team]);
 
   if (minimal) {
     return (
-      <div ref={ref} className="hidden md:block min-w-0 mt-auto shrink-0">
+      <div ref={ref} className="block min-w-0 mt-auto shrink-0">
         <ApplyButton team={team} tone={tone} recruiting={recruiting} external={external} />
       </div>
     );
   }
 
   return (
-    <div ref={ref} className="hidden md:flex flex-col min-w-0 flex-1 min-h-0">
+    <div ref={ref} className="flex flex-col min-w-0 shrink-0 md:shrink md:flex-1 md:min-h-0">
       <span className="flex items-center gap-1.5 font-mono text-[10px] tracking-[0.18em] uppercase text-neutral-500 mb-3 shrink-0">
         <UserPlus size={10} strokeWidth={2} style={{ color: tone.icon }} />
         Aradığımız profil
@@ -339,7 +336,7 @@ function RecruitingBox({ team, tone, recruiting, external }) {
 
         <div className="flex-1 flex flex-col p-3 gap-3 min-h-0">
           <div className="flex-1 min-h-0 overflow-hidden">
-            <p className="text-neutral-300 text-[12.5px] leading-[1.65] line-clamp-3">
+            <p className="text-neutral-300 text-[11px] leading-[1.65] line-clamp-3">
               {team.recruitingFor}
             </p>
           </div>
@@ -433,14 +430,28 @@ function TeamPanel({ team, num }) {
       </header>
 
       <div className="relative flex-1 flex flex-col gap-4 sm:gap-5 px-4 sm:px-6 md:px-8 py-4 sm:py-6 min-h-0">
-        <div className="grid grid-cols-1 md:grid-cols-[1.35fr_1fr] gap-x-6 lg:gap-x-8 gap-y-4 sm:gap-y-5 flex-1 min-h-0">
-          <section className="flex flex-col gap-4 sm:gap-5 min-w-0 min-h-0">
+        {/* Mobile: anlatım → works (dynamic) → recruiting/apply */}
+        <div className="md:hidden flex flex-col gap-4 flex-1 min-h-0">
+          <div className="shrink-0">
+            <span className="flex items-center gap-1.5 font-mono text-[9.5px] tracking-[0.18em] uppercase text-neutral-500 mb-2">
+              <Sparkles size={10} strokeWidth={2} style={{ color: tone.icon }} />
+              Ekip anlatıyor
+            </span>
+            <p className="text-neutral-200 text-[12.5px] leading-[1.6] line-clamp-3">{team.longDesc}</p>
+          </div>
+          <WorksList works={team.works} tone={tone} />
+          <RecruitingBox team={team} tone={tone} recruiting={recruiting} external={external} />
+        </div>
+
+        {/* Desktop: side-by-side grid */}
+        <div className="hidden md:grid grid-cols-[1.35fr_1fr] gap-x-6 lg:gap-x-8 gap-y-5 flex-1 min-h-0">
+          <section className="flex flex-col gap-5 min-w-0 min-h-0">
             <div className="shrink-0">
-              <span className="flex items-center gap-1.5 font-mono text-[9.5px] sm:text-[10px] tracking-[0.18em] uppercase text-neutral-500 mb-2 sm:mb-3">
+              <span className="flex items-center gap-1.5 font-mono text-[10px] tracking-[0.18em] uppercase text-neutral-500 mb-3">
                 <Sparkles size={10} strokeWidth={2} style={{ color: tone.icon }} />
                 Ekip anlatıyor
               </span>
-              <p className="text-neutral-200 text-[12.5px] sm:text-[13.5px] md:text-[14px] leading-[1.6] sm:leading-[1.7] line-clamp-3 md:line-clamp-4 xl:line-clamp-none">{team.longDesc}</p>
+              <p className="text-neutral-200 text-[14px] leading-[1.7] line-clamp-4 xl:line-clamp-none">{team.longDesc}</p>
             </div>
 
             <RecruitingBox team={team} tone={tone} recruiting={recruiting} external={external} />
