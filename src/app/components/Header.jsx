@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { useRouter } from 'next/navigation';
 import Link from "next/link";
 
 const TOP_THRESHOLD = 40;
@@ -54,6 +55,7 @@ function ContextTag({ show }) {
 
 export default function Header({ scrollRef }) {
   const atTop = useIsAtTop(scrollRef);
+  const router = useRouter();
 
   return (
     <motion.header
@@ -73,7 +75,7 @@ export default function Header({ scrollRef }) {
           <ContextTag show={atTop} />
         </Link>
 
-        <motion.a href="https://forms.yildizskylab.com/" initial="initial" whileHover="hover"
+        <motion.button onClick={() => router.push('/stant')} initial="initial" whileHover="hover"
           className={`min-w-24 h-8 relative inline-flex items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-neutral-100 transition-colors hover:border-pink-100/40 hover:bg-pink-100/30 hover:text-pink-100`}
         >
           <div className="relative flex flex-col items-center justify-center overflow-hidden">
@@ -85,7 +87,7 @@ export default function Header({ scrollRef }) {
               <ChevronRight size={16} />
             </motion.span>
           </div>
-        </motion.a>
+        </motion.button>
       </div>
     </motion.header>
   );
