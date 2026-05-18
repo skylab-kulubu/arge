@@ -13,6 +13,16 @@
   --color-skylab-900: #6e4576;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
 :root {
   --sb-size: 10px;
   --sb-radius: 9999px;

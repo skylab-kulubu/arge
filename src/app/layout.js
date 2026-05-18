@@ -15,6 +15,10 @@ const jetbrainsMono = JetBrains_Mono({
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://arge.yildizskylab.com";
 
+export const viewport = {
+  viewportFit: "cover",
+};
+
 export const metadata = {
   metadataBase: new URL(siteUrl),
   title: {

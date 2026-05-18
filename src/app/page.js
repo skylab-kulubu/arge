@@ -17,7 +17,7 @@ export default function Page() {
     <ScrollContainerContext.Provider value={scrollRef}>
       <main
         ref={scrollRef}
-        className="sl-root relative h-screen overflow-y-auto overflow-x-hidden scroll-smooth scrollbar scrollbar-gutter-both bg-neutral-950 text-white selection:bg-skylab-500 selection:text-neutral-900 font-sans"
+        className="sl-root relative h-screen overflow-y-auto overflow-x-hidden scroll-smooth scrollbar scrollbar-gutter-both bg-neutral-950 text-white selection:bg-skylab-500 selection:text-neutral-900 font-sans overscroll-none pb-[env(safe-area-inset-bottom)]"
       >
         <Background />
         <Spotlight />

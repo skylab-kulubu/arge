@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useScroll } from "framer-motion";
 import { Hash, ChevronRight, UserPlus, Sparkles, Trophy, ArrowRight, Users2 } from "lucide-react";
 import { TEAMS, TONE, STATUS } from "@/data/teams";
@@ -109,7 +109,27 @@ function Leads({ leads, tone }) {
       <span className="font-mono text-[9.5px] uppercase tracking-[0.18em] text-neutral-500">
         Ekip {isPair ? "Liderleri" : "Lideri"}
       </span>
-      <div className="flex flex-col gap-1.5">
+
+      {/* Mobile: inline compact */}
+      <div className="flex md:hidden items-center gap-2 min-w-0">
+        <div className="flex -space-x-2 shrink-0">
+          {leads.map((l) => (
+            <span
+              key={l.initials}
+              className="flex items-center justify-center w-6 h-6 rounded-full border-[1.5px] font-mono text-[9px] font-bold"
+              style={{ borderColor: tone.ring, color: tone.icon, background: tone.chip }}
+            >
+              {l.initials}
+            </span>
+          ))}
+        </div>
+        <span className="text-[12.5px] text-neutral-200 truncate">
+          {leads.map((l) => l.name).join(" & ")}
+        </span>
+      </div>
+
+      {/* Desktop: vertical list */}
+      <div className="hidden md:flex flex-col gap-1.5">
         {leads.map((l) => (
           <div key={l.initials} className="flex items-center gap-2 min-w-0">
             <span
@@ -121,6 +141,212 @@ function Leads({ leads, tone }) {
             <span className="text-[13px] text-neutral-200 truncate">{l.name}</span>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+function WorksList({ works, tone }) {
+  const sectionRef = useRef(null);
+
+  useLayoutEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const measure = () => {
+      const header = section.querySelector("[data-header]");
+      const items = [...section.querySelectorAll("li")];
+      if (!items.length) return;
+
+      items.forEach((item) => (item.style.display = "flex"));
+      const available = section.clientHeight - (header?.offsetHeight ?? 0);
+      let used = 0;
+      let n = 0;
+      for (const item of items) {
+        used += item.offsetHeight;
+        if (used <= available) n++;
+        else break;
+      }
+      items.forEach((item, i) => {
+        item.style.display = i < n ? "" : "none";
+      });
+    };
+
+    const ro = new ResizeObserver(measure);
+    ro.observe(section);
+    measure();
+    return () => ro.disconnect();
+  }, [works]);
+
+  return (
+    <section ref={sectionRef} className="hidden md:flex flex-col min-w-0">
+      <span
+        data-header
+        className="flex items-center gap-1.5 font-mono text-[9.5px] sm:text-[10px] tracking-[0.18em] uppercase text-neutral-500 mb-2 sm:mb-3"
+      >
+        <Trophy size={10} strokeWidth={2} style={{ color: tone.icon }} />
+        Öne çıkan işler
+      </span>
+      <ul className="flex flex-col">
+        {works.map((w, i) => (
+          <li
+            key={w.title}
+            className="group/work flex items-start gap-2.5 sm:gap-3 py-1.5 sm:py-2 border-b border-white/4 last:border-b-0"
+          >
+            <span className="font-mono text-[9.5px] sm:text-[10px] tabular-nums text-neutral-600 w-4 sm:w-5 shrink-0 pt-0.5 group-hover/work:text-neutral-400 transition-colors">
+              {pad(i + 1)}
+            </span>
+            <div className="flex-1 min-w-0 flex flex-col gap-0.5 sm:gap-1">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <span className="text-[12px] sm:text-[12.5px] md:text-[13px] text-neutral-200 leading-[1.4] group-hover/work:text-white transition-colors">
+                  {w.title}
+                </span>
+                <StatusPill status={w.status} />
+              </div>
+              {w.note && (
+                <span className="hidden sm:block text-[11.5px] text-neutral-500 leading-normal">
+                  {w.note}
+                </span>
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function ApplyButton({ team, tone, recruiting, external }) {
+  if (!recruiting) {
+    return (
+      <p className="text-[11.5px] text-neutral-500 italic leading-[1.6] pt-2 border-t border-white/6">
+        Bu dönem yeni üye alımı yapılmıyor.
+      </p>
+    );
+  }
+  return (
+    <a
+      href={team.applyUrl}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noopener noreferrer" : undefined}
+      className="group/cta flex items-stretch rounded-md border overflow-hidden"
+      style={{ borderColor: tone.ring }}
+    >
+      <span
+        className="flex-1 flex items-center justify-center py-2 px-3.5 font-medium text-[12.5px] tracking-tight"
+        style={{ background: tone.chip, color: tone.icon }}
+      >
+        Ekibe Başvur
+      </span>
+      <span
+        className="relative flex items-center justify-center border-l overflow-hidden w-10"
+        style={{ background: tone.soft, borderColor: tone.ring, color: tone.icon }}
+      >
+        <ArrowRight
+          size={14}
+          strokeWidth={2}
+          className="absolute transition-all duration-300 ease-out group-hover/cta:translate-x-5 group-hover/cta:opacity-0"
+        />
+        <ArrowRight
+          size={14}
+          strokeWidth={2}
+          className="absolute -translate-x-5 opacity-0 transition-all duration-300 ease-out group-hover/cta:translate-x-0 group-hover/cta:opacity-100"
+        />
+      </span>
+    </a>
+  );
+}
+
+function RecruitingBox({ team, tone, recruiting, external }) {
+  const ref = useRef(null);
+  const [minimal, setMinimal] = useState(false);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const parent = el.parentElement;
+    if (!parent) return;
+
+    const measure = () => {
+      const parentH = parent.clientHeight;
+      let used = 0;
+      let sib = el.previousElementSibling;
+      while (sib) {
+        used += sib.offsetHeight;
+        sib = sib.previousElementSibling;
+      }
+      const gap = 20;
+      const available = parentH - used - gap;
+      setMinimal(available < 130);
+    };
+
+    const ro = new ResizeObserver(measure);
+    ro.observe(parent);
+    if (el.previousElementSibling) ro.observe(el.previousElementSibling);
+    measure();
+    return () => ro.disconnect();
+  }, [team]);
+
+  if (minimal) {
+    return (
+      <div ref={ref} className="hidden md:block min-w-0 mt-auto shrink-0">
+        <ApplyButton team={team} tone={tone} recruiting={recruiting} external={external} />
+      </div>
+    );
+  }
+
+  return (
+    <div ref={ref} className="hidden md:flex flex-col min-w-0 flex-1 min-h-0">
+      <span className="flex items-center gap-1.5 font-mono text-[10px] tracking-[0.18em] uppercase text-neutral-500 mb-3 shrink-0">
+        <UserPlus size={10} strokeWidth={2} style={{ color: tone.icon }} />
+        Aradığımız profil
+      </span>
+      <div
+        className="relative rounded-lg border overflow-hidden flex-1 flex flex-col min-h-0"
+        style={{
+          borderColor: recruiting ? tone.ring : "rgba(255,255,255,0.08)",
+          background: recruiting ? tone.soft : "rgba(255,255,255,0.02)",
+        }}
+      >
+        <div
+          className="flex items-center justify-between px-3 py-1.5 border-b shrink-0"
+          style={{
+            borderColor: recruiting ? tone.ring : "rgba(255,255,255,0.06)",
+            background: recruiting ? tone.chip : "transparent",
+          }}
+        >
+          <span
+            className="font-mono text-[9.5px] tracking-[0.22em] uppercase font-semibold"
+            style={{ color: recruiting ? tone.icon : "rgb(115,115,115)" }}
+          >
+            {recruiting ? "Açık Pozisyon" : "Alım Kapalı"}
+          </span>
+          {recruiting ? (
+            <span className="relative flex h-1.5 w-1.5">
+              <span
+                className="absolute inset-0 rounded-full animate-ping opacity-70"
+                style={{ background: tone.icon }}
+              />
+              <span
+                className="relative inline-flex rounded-full h-1.5 w-1.5"
+                style={{ background: tone.icon, boxShadow: `0 0 6px ${tone.glow}` }}
+              />
+            </span>
+          ) : (
+            <span className="h-1.5 w-1.5 rounded-full bg-neutral-700" />
+          )}
+        </div>
+
+        <div className="flex-1 flex flex-col p-3 gap-3 min-h-0">
+          <div className="flex-1 min-h-0 overflow-hidden">
+            <p className="text-neutral-300 text-[12.5px] leading-[1.65] line-clamp-3">
+              {team.recruitingFor}
+            </p>
+          </div>
+          <div className="shrink-0">
+            <ApplyButton team={team} tone={tone} recruiting={recruiting} external={external} />
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -208,138 +434,19 @@ function TeamPanel({ team, num }) {
 
       <div className="relative flex-1 flex flex-col gap-4 sm:gap-5 px-4 sm:px-6 md:px-8 py-4 sm:py-6 min-h-0">
         <div className="grid grid-cols-1 md:grid-cols-[1.35fr_1fr] gap-x-6 lg:gap-x-8 gap-y-4 sm:gap-y-5 flex-1 min-h-0">
-          <section className="flex flex-col gap-4 sm:gap-5 min-w-0">
-            <div>
+          <section className="flex flex-col gap-4 sm:gap-5 min-w-0 min-h-0">
+            <div className="shrink-0">
               <span className="flex items-center gap-1.5 font-mono text-[9.5px] sm:text-[10px] tracking-[0.18em] uppercase text-neutral-500 mb-2 sm:mb-3">
                 <Sparkles size={10} strokeWidth={2} style={{ color: tone.icon }} />
                 Ekip anlatıyor
               </span>
-              <p className="text-neutral-200 text-[12.5px] sm:text-[13.5px] md:text-[14px] leading-[1.6] sm:leading-[1.7]">{team.longDesc}</p>
+              <p className="text-neutral-200 text-[12.5px] sm:text-[13.5px] md:text-[14px] leading-[1.6] sm:leading-[1.7] line-clamp-3 md:line-clamp-4 xl:line-clamp-none">{team.longDesc}</p>
             </div>
 
-            <div className="hidden md:flex flex-col min-w-0 mt-auto">
-            <span className="flex items-center gap-1.5 font-mono text-[10px] tracking-[0.18em] uppercase text-neutral-500 mb-3">
-              <UserPlus size={10} strokeWidth={2} style={{ color: tone.icon }} />
-              Aradığımız profil
-            </span>
-            <div
-              className="relative rounded-lg border overflow-hidden flex-1 flex flex-col"
-              style={{
-                borderColor: recruiting ? tone.ring : "rgba(255,255,255,0.08)",
-                background: recruiting ? tone.soft : "rgba(255,255,255,0.02)",
-              }}
-            >
-              <div
-                className="flex items-center justify-between px-3 py-1.5 border-b"
-                style={{
-                  borderColor: recruiting ? tone.ring : "rgba(255,255,255,0.06)",
-                  background: recruiting ? tone.chip : "transparent",
-                }}
-              >
-                <span
-                  className="font-mono text-[9.5px] tracking-[0.22em] uppercase font-semibold"
-                  style={{ color: recruiting ? tone.icon : "rgb(115,115,115)" }}
-                >
-                  {recruiting ? "Açık Pozisyon" : "Alım Kapalı"}
-                </span>
-                {recruiting ? (
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span
-                      className="absolute inset-0 rounded-full animate-ping opacity-70"
-                      style={{ background: tone.icon }}
-                    />
-                    <span
-                      className="relative inline-flex rounded-full h-1.5 w-1.5"
-                      style={{ background: tone.icon, boxShadow: `0 0 6px ${tone.glow}` }}
-                    />
-                  </span>
-                ) : (
-                  <span className="h-1.5 w-1.5 rounded-full bg-neutral-700" />
-                )}
-              </div>
-
-              <div className="flex-1 flex flex-col p-3 gap-3">
-                <p className="text-neutral-300 text-[12.5px] leading-[1.65]">
-                  {team.recruitingFor}
-                </p>
-
-                <div className="mt-auto">
-                  {recruiting ? (
-                    <a
-                      href={team.applyUrl}
-                      target={external ? "_blank" : undefined}
-                      rel={external ? "noopener noreferrer" : undefined}
-                      className="group/cta flex items-stretch rounded-md border overflow-hidden"
-                      style={{ borderColor: tone.ring }}
-                    >
-                      <span
-                        className="flex-1 flex items-center justify-center py-2 px-3.5 font-medium text-[12.5px] tracking-tight"
-                        style={{ background: tone.chip, color: tone.icon }}
-                      >
-                        Ekibe Başvur
-                      </span>
-                      <span
-                        className="relative flex items-center justify-center border-l overflow-hidden w-10"
-                        style={{
-                          background: tone.soft,
-                          borderColor: tone.ring,
-                          color: tone.icon,
-                        }}
-                      >
-                        <ArrowRight
-                          size={14}
-                          strokeWidth={2}
-                          className="absolute transition-all duration-300 ease-out group-hover/cta:translate-x-5 group-hover/cta:opacity-0"
-                        />
-                        <ArrowRight
-                          size={14}
-                          strokeWidth={2}
-                          className="absolute -translate-x-5 opacity-0 transition-all duration-300 ease-out group-hover/cta:translate-x-0 group-hover/cta:opacity-100"
-                        />
-                      </span>
-                    </a>
-                  ) : (
-                    <p className="text-[11.5px] text-neutral-500 italic leading-[1.6] pt-2 border-t border-white/6">
-                      Bu dönem yeni üye alımı yapılmıyor.
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-            </div>
+            <RecruitingBox team={team} tone={tone} recruiting={recruiting} external={external} />
           </section>
 
-          <section className="flex flex-col min-w-0">
-            <span className="flex items-center gap-1.5 font-mono text-[9.5px] sm:text-[10px] tracking-[0.18em] uppercase text-neutral-500 mb-2 sm:mb-3">
-              <Trophy size={10} strokeWidth={2} style={{ color: tone.icon }} />
-              Öne çıkan işler
-            </span>
-            <ul className="flex flex-col">
-              {team.works.map((w, i) => (
-                <li
-                  key={w.title}
-                  className="group/work flex items-start gap-2.5 sm:gap-3 py-1.5 sm:py-2 border-b border-white/4 last:border-b-0"
-                >
-                  <span className="font-mono text-[9.5px] sm:text-[10px] tabular-nums text-neutral-600 w-4 sm:w-5 shrink-0 pt-0.5 group-hover/work:text-neutral-400 transition-colors">
-                    {pad(i + 1)}
-                  </span>
-                  <div className="flex-1 min-w-0 flex flex-col gap-0.5 sm:gap-1">
-                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                      <span className="text-[12px] sm:text-[12.5px] md:text-[13px] text-neutral-200 leading-[1.4] group-hover/work:text-white transition-colors">
-                        {w.title}
-                      </span>
-                      <StatusPill status={w.status} />
-                    </div>
-                    {w.note && (
-                      <span className="hidden sm:block text-[11.5px] text-neutral-500 leading-normal">
-                        {w.note}
-                      </span>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </section>
+          <WorksList works={team.works} tone={tone} />
         </div>
 
         <div className="border-t border-white/6 pt-3 sm:pt-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
@@ -465,9 +572,37 @@ export default function Teams() {
         style={{ "--pin-h": `${TEAMS.length * PIN_VH_PER_TAB}vh` }}
       >
         <div className="h-(--pin-h)">
-          <div className="sticky top-20 h-[calc(100vh-5rem)] flex items-center px-5 md:px-10">
-            <div className="max-w-6xl mx-auto w-full">
-              <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] grid-rows-1 gap-4 lg:gap-6 h-[calc(100vh-9rem)] lg:h-160 lg:items-stretch">
+          <div className="sticky top-20 h-[calc(100dvh-5rem)] flex items-center px-5 md:px-10">
+            <div className="max-w-6xl mx-auto w-full h-[calc(100dvh-9rem)] lg:h-160 flex flex-col lg:block">
+              <div className="flex lg:hidden items-center gap-3 shrink-0 -mt-8 mb-1">
+                <span className="font-mono text-[9.5px] uppercase text-neutral-500 shrink-0">
+                  {pad(activeIndex + 1)} / {pad(TEAMS.length)}
+                </span>
+                <div className="flex gap-1 flex-1">
+                  {TEAMS.map((t, i) => (
+                    <button
+                      key={t.id}
+                      onClick={() => handleTabClick(i)}
+                      aria-label={t.name}
+                      className="flex-1 py-1 flex items-center"
+                    >
+                      <span
+                        className="w-full h-0.5 rounded-full transition-all duration-300"
+                        style={{
+                          background: i === activeIndex
+                            ? TONE[active.tone].icon
+                            : "rgba(255,255,255,0.15)",
+                        }}
+                      />
+                    </button>
+                  ))}
+                </div>
+                <span lang="en" className="font-mono text-[9.5px] tracking-[0.18em] uppercase text-neutral-500 shrink-0">
+                  {active.name}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] grid-rows-1 gap-4 lg:gap-6 flex-1 min-h-0 lg:h-full lg:items-stretch">
                 <aside
                   role="tablist"
                   aria-label="Ekipler"
