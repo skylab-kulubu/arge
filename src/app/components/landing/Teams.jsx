@@ -267,19 +267,27 @@ function RecruitingBox({ team, tone, recruiting, external }) {
     const parent = el.parentElement;
     if (!parent) return;
 
+    const FULL_NATURAL = 168;
+    const WORKS_MIN = 80;
+    const GAPS = 32;
+    const HYSTERESIS = 14;
+
     const measure = () => {
       const parentH = parent.clientHeight;
       const firstSib = parent.firstElementChild;
       const firstSibH = firstSib && firstSib !== el ? firstSib.offsetHeight : 0;
-      const available = parentH - firstSibH;
-      setMinimal(available < 130);
+      const hasFlexSibling = parent.children.length > 2;
+      const reserve = hasFlexSibling ? WORKS_MIN + GAPS : 0;
+      const room = parentH - firstSibH - reserve - FULL_NATURAL;
+
+      setMinimal((prev) => (prev ? room < HYSTERESIS : room < 0));
     };
 
     const ro = new ResizeObserver(measure);
     ro.observe(parent);
-    if (parent.firstElementChild && parent.firstElementChild !== el) {
-      ro.observe(parent.firstElementChild);
-    }
+    [...parent.children].forEach((c) => {
+      if (c !== el) ro.observe(c);
+    });
     measure();
     return () => ro.disconnect();
   }, [team]);
@@ -507,14 +515,29 @@ export default function Teams() {
   });
 
   useEffect(() => {
+    const n = TEAMS.length;
+    const HYS = 0.08 / n;
+    let rafId = null;
+    let pendingV = 0;
+
+    const commit = () => {
+      rafId = null;
+      const v = pendingV;
+      setActiveIndex((prev) => {
+        if (v >= prev / n - HYS && v < (prev + 1) / n + HYS) return prev;
+        return Math.min(n - 1, Math.max(0, Math.floor(v * n)));
+      });
+    };
+
     const unsub = scrollYProgress.on("change", (v) => {
-      const idx = Math.min(
-        TEAMS.length - 1,
-        Math.max(0, Math.floor(v * TEAMS.length))
-      );
-      setActiveIndex((prev) => (prev === idx ? prev : idx));
+      pendingV = v;
+      if (rafId == null) rafId = requestAnimationFrame(commit);
     });
-    return () => unsub();
+
+    return () => {
+      unsub();
+      if (rafId != null) cancelAnimationFrame(rafId);
+    };
   }, [scrollYProgress]);
 
   const scrollToIndex = useCallback(
