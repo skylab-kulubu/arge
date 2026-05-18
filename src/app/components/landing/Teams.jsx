@@ -1,9 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence, useScroll } from "framer-motion";
 import { Hash, ChevronRight, UserPlus, Sparkles, Trophy, ArrowRight, Users2 } from "lucide-react";
 import { TEAMS, TONE, STATUS } from "@/data/teams";
+import { useScrollContainer } from "./utils";
+
+const PIN_VH_PER_TAB = 60;
 
 const pad = (n) => String(n).padStart(2, "0");
 
@@ -140,11 +143,11 @@ function TeamPanel({ team, num }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -4 }}
-      transition={{ duration: 0.28, ease: [0.2, 0.7, 0.3, 1] }}
-      className="relative h-full rounded-2xl border border-white/10 bg-neutral-950/40 backdrop-blur-sm overflow-hidden flex flex-col"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.18, ease: "easeOut" }}
+      className="absolute inset-0 rounded-2xl border border-white/10 bg-neutral-950/40 backdrop-blur-sm overflow-hidden flex flex-col"
       id={team.id}
     >
       <div
@@ -156,36 +159,39 @@ function TeamPanel({ team, num }) {
         style={{ background: `linear-gradient(90deg, transparent, ${tone.icon} 50%, transparent)`, opacity: 0.5 }}
       />
 
-      <header className="relative shrink-0 px-6 md:px-8 pt-7 pb-6 border-b border-white/6">
-        <div className="flex items-center gap-3 mb-4 flex-wrap">
-          <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-neutral-500">
+      <header className="relative shrink-0 px-4 sm:px-6 md:px-8 pt-5 pb-4 md:pt-7 md:pb-6 border-b border-white/6">
+        <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4 flex-wrap">
+          <span className="font-mono text-[9.5px] sm:text-[10px] tracking-[0.18em] uppercase text-neutral-500">
             {num} · EKİP
           </span>
-          {team.topics?.map((t) => (
+          {team.topics?.map((t, i) => (
             <span
               key={t}
-              className="font-mono text-[10px] tracking-[0.16em] uppercase text-neutral-500 before:content-['·'] before:mr-3 before:text-neutral-700"
+              className={`font-mono text-[9.5px] sm:text-[10px] tracking-[0.16em] uppercase text-neutral-500 before:content-['·'] before:mr-2 sm:before:mr-3 before:text-neutral-700 ${
+                i > 0 ? "hidden sm:inline" : ""
+              }`}
             >
               {t}
             </span>
           ))}
-          <span className="h-px flex-1 bg-neutral-800 min-w-8" />
+          <span className="h-px flex-1 bg-neutral-800 min-w-4 sm:min-w-8" />
           <RecruitingChip recruiting={team.recruiting} />
         </div>
 
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-5 md:gap-6">
-          <div className="flex items-start gap-4 md:gap-5 flex-1 min-w-0">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 md:gap-6">
+          <div className="flex items-start gap-3 sm:gap-4 md:gap-5 flex-1 min-w-0">
             <div
-              className="flex items-center justify-center w-14 h-14 rounded-xl border shrink-0"
+              className="flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-xl border shrink-0"
               style={{ borderColor: tone.ring, background: tone.chip, color: tone.icon }}
             >
-              <Icon size={24} strokeWidth={1.4} />
+              <Icon size={20} strokeWidth={1.4} className="sm:hidden" />
+              <Icon size={24} strokeWidth={1.4} className="hidden sm:block" />
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-white text-3xl md:text-[34px] font-bold tracking-tight leading-[1.05]">
+              <h3 className="text-white text-[22px] sm:text-2xl md:text-3xl lg:text-[34px] font-bold tracking-tight leading-[1.05]">
                 {team.name}
               </h3>
-              <p className="mt-2.5 text-neutral-300 text-[14.5px] leading-[1.55] max-w-[58ch]">
+              <p className="mt-2 sm:mt-2.5 text-neutral-300 text-[12.5px] sm:text-[13.5px] md:text-[14.5px] leading-normal sm:leading-[1.55] max-w-[58ch]">
                 {team.desc}
               </p>
             </div>
@@ -195,18 +201,18 @@ function TeamPanel({ team, num }) {
         </div>
       </header>
 
-      <div className="relative flex-1 flex flex-col gap-5 px-6 md:px-8 py-6 min-h-0">
-        <div className="grid grid-cols-1 md:grid-cols-[1.35fr_1fr] gap-x-8 gap-y-5 flex-1 min-h-0">
-          <section className="flex flex-col gap-5 min-w-0">
+      <div className="relative flex-1 flex flex-col gap-4 sm:gap-5 px-4 sm:px-6 md:px-8 py-4 sm:py-6 min-h-0">
+        <div className="grid grid-cols-1 md:grid-cols-[1.35fr_1fr] gap-x-6 lg:gap-x-8 gap-y-4 sm:gap-y-5 flex-1 min-h-0">
+          <section className="flex flex-col gap-4 sm:gap-5 min-w-0">
             <div>
-              <span className="flex items-center gap-1.5 font-mono text-[10px] tracking-[0.18em] uppercase text-neutral-500 mb-3">
+              <span className="flex items-center gap-1.5 font-mono text-[9.5px] sm:text-[10px] tracking-[0.18em] uppercase text-neutral-500 mb-2 sm:mb-3">
                 <Sparkles size={10} strokeWidth={2} style={{ color: tone.icon }} />
                 Ekip anlatıyor
               </span>
-              <p className="text-neutral-200 text-[14px] leading-[1.7]">{team.longDesc}</p>
+              <p className="text-neutral-200 text-[12.5px] sm:text-[13.5px] md:text-[14px] leading-[1.6] sm:leading-[1.7]">{team.longDesc}</p>
             </div>
 
-            <div className="flex flex-col min-w-0 mt-auto">
+            <div className="hidden md:flex flex-col min-w-0 mt-auto">
             <span className="flex items-center gap-1.5 font-mono text-[10px] tracking-[0.18em] uppercase text-neutral-500 mb-3">
               <UserPlus size={10} strokeWidth={2} style={{ color: tone.icon }} />
               Aradığımız profil
@@ -297,7 +303,7 @@ function TeamPanel({ team, num }) {
           </section>
 
           <section className="flex flex-col min-w-0">
-            <span className="flex items-center gap-1.5 font-mono text-[10px] tracking-[0.18em] uppercase text-neutral-500 mb-3">
+            <span className="flex items-center gap-1.5 font-mono text-[9.5px] sm:text-[10px] tracking-[0.18em] uppercase text-neutral-500 mb-2 sm:mb-3">
               <Trophy size={10} strokeWidth={2} style={{ color: tone.icon }} />
               Öne çıkan işler
             </span>
@@ -305,20 +311,20 @@ function TeamPanel({ team, num }) {
               {team.works.map((w, i) => (
                 <li
                   key={w.title}
-                  className="group/work flex items-start gap-3 py-2 border-b border-white/4 last:border-b-0"
+                  className="group/work flex items-start gap-2.5 sm:gap-3 py-1.5 sm:py-2 border-b border-white/4 last:border-b-0"
                 >
-                  <span className="font-mono text-[10px] tabular-nums text-neutral-600 w-5 shrink-0 pt-0.5 group-hover/work:text-neutral-400 transition-colors">
+                  <span className="font-mono text-[9.5px] sm:text-[10px] tabular-nums text-neutral-600 w-4 sm:w-5 shrink-0 pt-0.5 group-hover/work:text-neutral-400 transition-colors">
                     {pad(i + 1)}
                   </span>
-                  <div className="flex-1 min-w-0 flex flex-col gap-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-[13px] text-neutral-200 leading-[1.4] group-hover/work:text-white transition-colors">
+                  <div className="flex-1 min-w-0 flex flex-col gap-0.5 sm:gap-1">
+                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                      <span className="text-[12px] sm:text-[12.5px] md:text-[13px] text-neutral-200 leading-[1.4] group-hover/work:text-white transition-colors">
                         {w.title}
                       </span>
                       <StatusPill status={w.status} />
                     </div>
                     {w.note && (
-                      <span className="text-[11.5px] text-neutral-500 leading-normal">
+                      <span className="hidden sm:block text-[11.5px] text-neutral-500 leading-normal">
                         {w.note}
                       </span>
                     )}
@@ -329,16 +335,16 @@ function TeamPanel({ team, num }) {
           </section>
         </div>
 
-        <div className="border-t border-white/6 pt-4 flex flex-col sm:flex-row sm:items-center gap-4">
-          <div className="flex-1 min-w-0 flex flex-wrap items-center gap-x-3 gap-y-2">
-            <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-neutral-500 shrink-0">
+        <div className="border-t border-white/6 pt-3 sm:pt-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+          <div className="flex-1 min-w-0 flex flex-wrap items-center gap-x-2 sm:gap-x-3 gap-y-1.5 sm:gap-y-2">
+            <span className="font-mono text-[9.5px] sm:text-[10px] tracking-[0.18em] uppercase text-neutral-500 shrink-0">
               Stack
             </span>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-1 sm:gap-1.5">
               {team.stack.map((s) => (
                 <span
                   key={s}
-                  className="inline-flex items-center gap-1 font-mono text-[11px] px-2 py-1 rounded-md border"
+                  className="inline-flex items-center gap-1 font-mono text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md border"
                   style={{ borderColor: tone.ring, background: tone.soft, color: tone.icon }}
                 >
                   <Hash size={9} strokeWidth={2} />
@@ -352,7 +358,7 @@ function TeamPanel({ team, num }) {
 
           <div className="flex items-center gap-2 shrink-0">
             <Users2 size={13} strokeWidth={1.8} className="text-neutral-500" />
-            <span className="font-mono text-[12px] text-neutral-400">
+            <span className="font-mono text-[11px] sm:text-[12px] text-neutral-400">
               {team.members} üye
             </span>
           </div>
@@ -363,54 +369,125 @@ function TeamPanel({ team, num }) {
 }
 
 export default function Teams() {
-  const [activeId, setActiveId] = useState(TEAMS[0].id);
-  const activeIndex = Math.max(0, TEAMS.findIndex((t) => t.id === activeId));
-  const active = TEAMS[activeIndex];
+  const scrollContainer = useScrollContainer();
+  const pinRef = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(0);
   const openCount = TEAMS.filter((t) => t.recruiting).length;
+  const active = TEAMS[activeIndex];
+
+  const { scrollYProgress } = useScroll({
+    container: scrollContainer ?? undefined,
+    target: pinRef,
+    offset: ["start start", "end end"],
+  });
+
+  useEffect(() => {
+    const unsub = scrollYProgress.on("change", (v) => {
+      const idx = Math.min(
+        TEAMS.length - 1,
+        Math.max(0, Math.floor(v * TEAMS.length))
+      );
+      setActiveIndex((prev) => (prev === idx ? prev : idx));
+    });
+    return () => unsub();
+  }, [scrollYProgress]);
+
+  const scrollToIndex = useCallback(
+    (i) => {
+      const container = scrollContainer?.current;
+      const pin = pinRef.current;
+      if (!container || !pin) {
+        setActiveIndex(i);
+        return;
+      }
+      const pinRect = pin.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      const pinTopInContainer =
+        container.scrollTop + pinRect.top - containerRect.top;
+      const usableHeight = pin.offsetHeight - container.clientHeight;
+      const target =
+        pinTopInContainer + ((i + 0.5) / TEAMS.length) * usableHeight;
+      container.scrollTo({ top: target, behavior: "smooth" });
+    },
+    [scrollContainer]
+  );
+
+  useEffect(() => {
+    const handler = () => {
+      const id =
+        typeof window !== "undefined" ? window.location.hash.slice(1) : "";
+      if (!id) return;
+      const idx = TEAMS.findIndex((t) => t.id === id);
+      if (idx >= 0) scrollToIndex(idx);
+    };
+    handler();
+    window.addEventListener("hashchange", handler);
+    return () => window.removeEventListener("hashchange", handler);
+  }, [scrollToIndex]);
+
+  const handleTabClick = scrollToIndex;
 
   return (
-    <section className="px-5 md:px-10 py-24 md:py-32" id="ekipler">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-baseline gap-4 mb-10">
-          <span className="text-skylab-500 font-mono text-xs">./ekipler</span>
-          <div className="flex-1 h-px bg-linear-to-r from-neutral-800 from-80% to-transparent" />
-          <span className="hidden sm:inline font-mono text-[10px] text-neutral-600 tracking-[0.16em] uppercase">
-            {openCount} ekip alım yapıyor
-          </span>
-        </div>
+    <section id="ekipler" className="relative">
+      <div className="px-5 md:px-10 pt-24 md:pt-32 pb-10 md:pb-12">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-baseline gap-4 mb-10">
+            <span className="text-skylab-500 font-mono text-xs">./ekipler</span>
+            <div className="flex-1 h-px bg-linear-to-r from-neutral-800 from-80% to-transparent" />
+            <span className="hidden sm:inline font-mono text-[10px] text-neutral-600 tracking-[0.16em] uppercase">
+              {openCount} ekip alım yapıyor
+            </span>
+          </div>
 
-        <div className="mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-6 max-w-5xl">
-          <div className="max-w-3xl">
-            <h2 className="text-white text-4xl md:text-5xl font-bold tracking-tight mb-4 leading-[1.05]">
-              Her ekibin kendi sahası.
-            </h2>
-            <p className="text-neutral-500 text-sm md:text-[15px] leading-[1.7]">
-              Yapay zekadan siber güvenliğe kadar 9 farklı çalışma alanını inceleyin. Ekiplerin vizyonunu, kullandıkları teknoloji yığınlarını ve kilit projelerini keşfederek hedeflerinize en uygun ekibi bulun.
-            </p>
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 max-w-5xl">
+            <div className="max-w-3xl">
+              <h2 className="text-white text-4xl md:text-5xl font-bold tracking-tight mb-4 leading-[1.05]">
+                Her ekibin kendi sahası.
+              </h2>
+              <p className="text-neutral-500 text-sm md:text-[15px] leading-[1.7]">
+                Yapay zekadan siber güvenliğe kadar 9 farklı çalışma alanını inceleyin. Ekiplerin vizyonunu, kullandıkları teknoloji yığınlarını ve kilit projelerini keşfederek hedeflerinize en uygun ekibi bulun.
+              </p>
+            </div>
           </div>
         </div>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-4 lg:gap-6 lg:h-180 lg:items-stretch">
-          <aside
-            role="tablist"
-            aria-label="Ekipler"
-            className="flex flex-col gap-1.5 lg:h-full"
-          >
-            {TEAMS.map((t, i) => (
-              <TeamTab
-                key={t.id}
-                team={t}
-                index={i}
-                isActive={t.id === activeId}
-                onClick={() => setActiveId(t.id)}
-              />
-            ))}
-          </aside>
+      <div
+        ref={pinRef}
+        className="relative pb-24 md:pb-32"
+        style={{ "--pin-h": `${TEAMS.length * PIN_VH_PER_TAB}vh` }}
+      >
+        <div className="h-(--pin-h)">
+          <div className="sticky top-20 h-[calc(100vh-5rem)] flex items-center px-5 md:px-10">
+            <div className="max-w-6xl mx-auto w-full">
+              <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] grid-rows-1 gap-4 lg:gap-6 h-[calc(100vh-9rem)] lg:h-160 lg:items-stretch">
+                <aside
+                  role="tablist"
+                  aria-label="Ekipler"
+                  className="hidden lg:flex flex-col gap-1.5 lg:h-full"
+                >
+                  {TEAMS.map((t, i) => (
+                    <TeamTab
+                      key={t.id}
+                      team={t}
+                      index={i}
+                      isActive={i === activeIndex}
+                      onClick={() => handleTabClick(i)}
+                    />
+                  ))}
+                </aside>
 
-          <div className="min-w-0 lg:h-full relative">
-            <AnimatePresence mode="wait">
-              <TeamPanel key={active.id} team={active} num={pad(activeIndex + 1)} />
-            </AnimatePresence>
+                <div className="min-w-0 h-full relative">
+                  <AnimatePresence initial={false}>
+                    <TeamPanel
+                      key={active.id}
+                      team={active}
+                      num={pad(activeIndex + 1)}
+                    />
+                  </AnimatePresence>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

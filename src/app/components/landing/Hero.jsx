@@ -36,6 +36,12 @@ function TeamsGrid() {
             <motion.a
               key={t.id}
               href={`#${t.id}`}
+              onClick={(e) => {
+                e.preventDefault();
+                if (typeof window === "undefined") return;
+                window.history.pushState(null, "", `#${t.id}`);
+                window.dispatchEvent(new HashChangeEvent("hashchange"));
+              }}
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.55 + i * 0.05, duration: 0.5, ease: [0.2, 0.7, 0.3, 1] }}
