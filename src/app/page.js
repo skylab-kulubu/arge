@@ -9,14 +9,13 @@ import Hero from "./components/landing/Hero";
 import Teams from "./components/landing/Teams";
 import Onboarding from "./components/landing/Onboarding";
 
-export default function Page() {
+export function Page() {
   const scrollRef = useRef(null);
   useReveal(scrollRef);
 
   return (
     <ScrollContainerContext.Provider value={scrollRef}>
-      <main
-        ref={scrollRef}
+      <main ref={scrollRef}
         className="sl-root relative h-screen overflow-y-auto overflow-x-hidden scroll-smooth scrollbar scrollbar-gutter-both bg-neutral-950 text-white selection:bg-skylab-500 selection:text-neutral-900 font-sans overscroll-none pb-[env(safe-area-inset-bottom)]"
       >
         <Background />

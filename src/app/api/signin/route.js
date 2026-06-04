@@ -1,0 +1,1 @@
+export { GET } from "@skylab-kulubu/inscribed-auth/signin";

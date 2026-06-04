@@ -5,6 +5,7 @@ import {
 export const TEAMS = [
   {
     id: "algolab",
+    cmsRole: "ALGOLAB_LEADER",
     name: "Algolab",
     desc: "Algoritma ve programlama alanında eğitimler veriyor, competitive programming dünyasında hızla ilerliyoruz.",
     longDesc: "Beginner, Algolearning ve Algostdy alt ekiplerimizle temelden ileri seviyeye C++ ve algoritma eğitimleri düzenliyoruz. Her hafta Algorithm Games Challenge (AGC) organize ediyor, İnzva ve çeşitli algoritma yarışmalarına katılarak yeteneklerimizi geliştiriyoruz.",
@@ -23,6 +24,7 @@ export const TEAMS = [
   },
   {
     id: "weblab",
+    cmsRole: "WEBLAB_LEADER",
     name: "Weblab",
     desc: "Modern teknolojileri kullanarak kulübümüzün ve projelerimizin web uygulama ihtiyaçlarını karşılıyoruz.",
     longDesc: "React, Next.js, Java ve .NET gibi teknolojilerle hem frontend hem backend geliştirmeleri yapıyoruz. Kullanıcı deneyimini ve performansı ön planda tutarak çeşitli web siteleri ve uygulamalar oluşturuyoruz.",
@@ -44,6 +46,7 @@ export const TEAMS = [
   },
   {
     id: "skysec",
+    cmsRole: "SKYSEC_LEADER",
     name: "Sky-Sec",
     desc: "Siber güvenlik alanında sızma testleri, saldırı ve savunma senaryoları üzerine çalışarak ilerliyoruz.",
     longDesc: "Local pentesting, red teaming ve blue team senaryoları üzerine çalışıyoruz. TryHackMe, HackTheBox gibi platformlarda YTÜ'yü temsil ediyor, SKYDAYS CTF ile siber güvenliğin merkezini üniversitemize taşıyoruz. Bilgisayar bilimleri mottosuyla SKY LAB sistemlerine güvenlik otomasyonları yazıyoruz.",
@@ -60,6 +63,7 @@ export const TEAMS = [
   },
   {
     id: "mobilab",
+    cmsRole: "MOBILAB_LEADER",
     name: "Mobilab",
     desc: "Flutter ile mobil uygulamalar geliştirerek kulübümüzün ve okulumuzun dijital ihtiyaçlarını karşılıyoruz.",
     longDesc: "Flutter kullanarak yaratıcı mobil uygulama fikirlerini hayata geçiriyoruz. Yeni ekip arkadaşlarımızı projelerde yer alacak şekilde yetiştiriyor, okulumuzu Teknofest gibi ulusal ve uluslararası yarışmalarda temsil etmeyi hedefliyoruz.",
@@ -78,6 +82,7 @@ export const TEAMS = [
   },
   {
     id: "gamelab",
+    cmsRole: "GAMELAB_LEADER",
     name: "Gamelab",
     desc: "Oyun geliştirme alanında eğitimler veriyor, farklı platformlar için yaratıcı oyunlar tasarlıyoruz.",
     longDesc: "Düzenlediğimiz etkinlikler ve eğitimlerle insanları oyun geliştirme dünyasıyla tanıştırıyoruz. Alt ekipler halinde çeşitli platformlar için oyunlar geliştiriyor, bu sene oyun geliştirme yarışmalarına iddialı bir şekilde hazırlanıyoruz.",
@@ -96,6 +101,7 @@ export const TEAMS = [
   },
   {
     id: "airlab",
+    cmsRole: "AIRLAB_LEADER",
     name: "Airlab",
     desc: "Yapay zeka, makine öğrenmesi ve derin öğrenme projeleriyle TEKNOFEST ve Kaggle'da boy gösteriyoruz.",
     longDesc: "Ulaşımda, sağlıkta ve Türkçe doğal dil işlemede yapay zeka yarışmalarına katılıyoruz. Kaggle ve datathonlarda deneyim kazanıyor, ARTLAB etkinliğimizde sergilemek üzere yapay zeka projeleri geliştiriyoruz.",
@@ -112,6 +118,7 @@ export const TEAMS = [
   },
   {
     id: "chainlab",
+    cmsRole: "CHAINLAB_LEADER",
     name: "Chainlab",
     desc: "Blockchain teknolojisini araştırıyor; Web1, Web2 ve Web3 alanlarında projeler geliştiriyoruz.",
     longDesc: "Blockchain ekosistemini tanıtmayı amaçlıyoruz. Hackathonlara hazırlanarak ekipler çıkarıyor, projeler geliştiriyor ve merkeziyetsiz teknolojiler dünyasında adımızı daha çok duyurmak için çalışıyoruz.",
@@ -128,6 +135,7 @@ export const TEAMS = [
   },
   {
     id: "skysis",
+    cmsRole: "SKYSIS_LEADER",
     name: "Skysis",
     desc: "Gömülü sistemler, donanım ve mekanik tasarımı üzerine projeler üretiyor, yarışmalara katılıyoruz.",
     longDesc: "Disiplinler arası bir ekiple Skylite ve Çedar projelerimizle TEKNOFEST'te yarışıyoruz. Gömülü yazılım, donanım ve mekanik tasarımda kendimizi geliştiriyor, bu alanda araştırma yazıları yazarak teknolojiyi yakından takip ediyoruz.",
@@ -144,6 +152,7 @@ export const TEAMS = [
   },
   {
     id: "organizasyon",
+    cmsRole: "ORGANIZASYON_LEADER",
     name: "Organizasyon",
     desc: "SKY LAB'in dev etkinliklerini düzenliyor, kulübün akademik ve sosyal gelişimine katkı sağlıyoruz.",
     longDesc: "ARTLAB (Yapay Zeka Zirvesi), SKYDAYS (Siber Güvenlik Etkinliği) ve YILDIZ JAM (Oyun Geliştirme Zirvesi) gibi büyük organizasyonları planlıyoruz. BİZBİZE söyleşileri ve sosyal sorumluluk projeleriyle üyelerimizin iş dünyasıyla bağ kurmasını sağlıyoruz.",

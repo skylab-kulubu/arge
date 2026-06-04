@@ -1,5 +1,6 @@
 import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { CmsPage } from "@/lib/cms";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -69,7 +70,9 @@ export default function RootLayout({ children }) {
       lang="tr"
       className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <body className="bg-neutral-950 text-white">{children}</body>
+      <CmsPage>
+        <body className="bg-neutral-950 text-white">{children}</body>
+      </CmsPage>
     </html>
   );
 }

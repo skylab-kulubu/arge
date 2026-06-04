@@ -1,0 +1,1 @@
+export { getServiceToken, onSyncError } from "@skylab-kulubu/inscribed-auth/config";
