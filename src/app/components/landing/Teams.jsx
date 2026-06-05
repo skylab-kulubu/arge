@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { motion, AnimatePresence, useScroll } from "framer-motion";
-import { Hash, ChevronRight, UserPlus, Sparkles, Trophy, ArrowRight, Users2 } from "lucide-react";
-import { TEAMS, TONE, STATUS } from "@/data/teams";
+import { Hash, ChevronRight, UserPlus, Sparkles, Trophy, ArrowRight, Users2, Loader2 } from "lucide-react";
+import { TONE, STATUS } from "@/data/teams";
 import { useScrollContainer } from "./utils";
 
 const PIN_VH_PER_TAB = 60;
@@ -11,6 +11,11 @@ const PIN_VH_PER_TAB = 60;
 const pad = (n) => String(n).padStart(2, "0");
 const isRecruiting = (t) => Boolean(t.recruiting && t.applyUrl);
 const isExternal = (url) => typeof url === "string" && /^https?:\/\//i.test(url);
+
+/** RichText (longDesc) ships sanitised HTML from the CMS, so render it as HTML. */
+function RichText({ html, className }) {
+  return <div className={className} dangerouslySetInnerHTML={{ __html: html || "" }} />;
+}
 
 function RecruitingChip({ recruiting, compact = false }) {
   if (recruiting) {
@@ -103,6 +108,16 @@ function TeamTab({ team, index, isActive, onClick }) {
 }
 
 function Leads({ leads, tone }) {
+  if (!leads || leads.length === 0) {
+    return (
+      <div className="shrink-0 flex flex-col gap-1.5 md:items-end">
+        <span className="font-mono text-[9.5px] uppercase tracking-[0.18em] text-neutral-500">
+          Ekip Lideri
+        </span>
+        <span className="text-[12.5px] text-neutral-500 italic">Henüz belirlenmedi</span>
+      </div>
+    );
+  }
   const isPair = leads.length > 1;
   return (
     <div className="shrink-0 flex flex-col gap-1.5 md:items-end">
@@ -445,7 +460,7 @@ function TeamPanel({ team, num }) {
               <Sparkles size={10} strokeWidth={2} style={{ color: tone.icon }} />
               Ekip anlatıyor
             </span>
-            <p className="text-neutral-200 text-[12.5px] leading-[1.6] line-clamp-3">{team.longDesc}</p>
+            <RichText html={team.longDesc} className="text-neutral-200 text-[12.5px] leading-[1.6] line-clamp-3" />
           </div>
           <WorksList works={team.works} tone={tone} />
           <RecruitingBox team={team} tone={tone} recruiting={recruiting} external={external} />
@@ -459,7 +474,7 @@ function TeamPanel({ team, num }) {
                 <Sparkles size={10} strokeWidth={2} style={{ color: tone.icon }} />
                 Ekip anlatıyor
               </span>
-              <p className="text-neutral-200 text-[14px] leading-[1.7] line-clamp-4 xl:line-clamp-none">{team.longDesc}</p>
+              <RichText html={team.longDesc} className="text-neutral-200 text-[14px] leading-[1.7] line-clamp-4 xl:line-clamp-none" />
             </div>
 
             <RecruitingBox team={team} tone={tone} recruiting={recruiting} external={external} />
@@ -501,12 +516,13 @@ function TeamPanel({ team, num }) {
   );
 }
 
-export default function Teams() {
+function TeamsView({ teams }) {
   const scrollContainer = useScrollContainer();
   const pinRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const openCount = TEAMS.filter(isRecruiting).length;
-  const active = TEAMS[activeIndex];
+  const openCount = teams.filter(isRecruiting).length;
+  const safeIndex = Math.min(activeIndex, teams.length - 1);
+  const active = teams[safeIndex];
 
   const { scrollYProgress } = useScroll({
     container: scrollContainer ?? undefined,
@@ -515,7 +531,7 @@ export default function Teams() {
   });
 
   useEffect(() => {
-    const n = TEAMS.length;
+    const n = teams.length;
     const HYS = 0.08 / n;
     let rafId = null;
     let pendingV = 0;
@@ -538,7 +554,7 @@ export default function Teams() {
       unsub();
       if (rafId != null) cancelAnimationFrame(rafId);
     };
-  }, [scrollYProgress]);
+  }, [scrollYProgress, teams.length]);
 
   const scrollToIndex = useCallback(
     (i) => {
@@ -554,10 +570,10 @@ export default function Teams() {
         container.scrollTop + pinRect.top - containerRect.top;
       const usableHeight = pin.offsetHeight - container.clientHeight;
       const target =
-        pinTopInContainer + ((i + 0.5) / TEAMS.length) * usableHeight;
+        pinTopInContainer + ((i + 0.5) / teams.length) * usableHeight;
       container.scrollTo({ top: target, behavior: "smooth" });
     },
-    [scrollContainer]
+    [scrollContainer, teams.length]
   );
 
   useEffect(() => {
@@ -565,13 +581,13 @@ export default function Teams() {
       const id =
         typeof window !== "undefined" ? window.location.hash.slice(1) : "";
       if (!id) return;
-      const idx = TEAMS.findIndex((t) => t.id === id);
+      const idx = teams.findIndex((t) => t.id === id);
       if (idx >= 0) scrollToIndex(idx);
     };
     handler();
     window.addEventListener("hashchange", handler);
     return () => window.removeEventListener("hashchange", handler);
-  }, [scrollToIndex]);
+  }, [scrollToIndex, teams]);
 
   const handleTabClick = scrollToIndex;
 
@@ -603,17 +619,17 @@ export default function Teams() {
       <div
         ref={pinRef}
         className="relative pb-24 md:pb-32"
-        style={{ "--pin-h": `${TEAMS.length * PIN_VH_PER_TAB}vh` }}
+        style={{ "--pin-h": `${teams.length * PIN_VH_PER_TAB}vh` }}
       >
         <div className="h-(--pin-h)">
           <div className="sticky top-20 h-[calc(100dvh-5rem)] flex items-center px-5 md:px-10">
             <div className="max-w-6xl mx-auto w-full h-[calc(100dvh-9rem)] lg:h-160 flex flex-col lg:block">
               <div className="flex lg:hidden items-center gap-3 shrink-0 -mt-8 mb-1">
                 <span className="font-mono text-[9.5px] uppercase text-neutral-500 shrink-0">
-                  {pad(activeIndex + 1)} / {pad(TEAMS.length)}
+                  {pad(safeIndex + 1)} / {pad(teams.length)}
                 </span>
                 <div className="flex gap-1 flex-1">
-                  {TEAMS.map((t, i) => (
+                  {teams.map((t, i) => (
                     <button
                       key={t.id}
                       onClick={() => handleTabClick(i)}
@@ -623,7 +639,7 @@ export default function Teams() {
                       <span
                         className="w-full h-0.5 rounded-full transition-all duration-300"
                         style={{
-                          background: i === activeIndex
+                          background: i === safeIndex
                             ? TONE[active.tone].icon
                             : "rgba(255,255,255,0.15)",
                         }}
@@ -642,12 +658,12 @@ export default function Teams() {
                   aria-label="Ekipler"
                   className="hidden lg:flex flex-col gap-1.5 lg:h-full"
                 >
-                  {TEAMS.map((t, i) => (
+                  {teams.map((t, i) => (
                     <TeamTab
                       key={t.id}
                       team={t}
                       index={i}
-                      isActive={i === activeIndex}
+                      isActive={i === safeIndex}
                       onClick={() => handleTabClick(i)}
                     />
                   ))}
@@ -658,7 +674,7 @@ export default function Teams() {
                     <TeamPanel
                       key={active.id}
                       team={active}
-                      num={pad(activeIndex + 1)}
+                      num={pad(safeIndex + 1)}
                     />
                   </AnimatePresence>
                 </div>
@@ -669,4 +685,38 @@ export default function Teams() {
       </div>
     </section>
   );
+}
+
+function TeamsStatus({ isLoading, error }) {
+  return (
+    <section id="ekipler" className="relative">
+      <div className="px-5 md:px-10 pt-24 md:pt-32 pb-10 md:pb-12">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-baseline gap-4 mb-10">
+            <span className="text-skylab-500 font-mono text-xs">./ekipler</span>
+            <div className="flex-1 h-px bg-linear-to-r from-neutral-800 from-80% to-transparent" />
+          </div>
+          <div className="min-h-[40dvh] flex flex-col items-center justify-center gap-3 text-center">
+            {isLoading ? (
+              <>
+                <Loader2 size={20} strokeWidth={2} className="text-neutral-500 animate-spin" />
+                <p className="text-neutral-500 text-sm">Ekipler yükleniyor…</p>
+              </>
+            ) : (
+              <p className="text-neutral-500 text-sm">
+                {error ? "Ekipler şu an yüklenemedi." : "Henüz ekip bulunmuyor."}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default function Teams({ teams = [], meta }) {
+  if (teams.length === 0) {
+    return <TeamsStatus isLoading={meta?.isLoading} error={meta?.error} />;
+  }
+  return <TeamsView teams={teams} />;
 }

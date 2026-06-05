@@ -7,7 +7,7 @@ import ShowcaseBody from "./ShowcaseBody";
 const dimRing = (ring, alpha = 0.14) =>
   ring.replace(/,\s*[\d.]+\s*\)\s*$/, `, ${alpha})`);
 
-export default function Showcase({ team, dir }) {
+export default function Showcase({ team, dir, teams }) {
   const tone = TONE.skylab;
   const [active, setActive] = useState(team);
   const [exiting, setExiting] = useState(null);
@@ -46,11 +46,11 @@ export default function Showcase({ team, dir }) {
       <div className="relative flex-1 min-h-0">
         {exiting && (
           <div key={`exit-${exiting.id}`} data-state="exit" data-dir={dir} className="showcase-content absolute inset-0">
-            <ShowcaseBody team={exiting} />
+            <ShowcaseBody team={exiting} teams={teams} />
           </div>
         )}
         <div key={`enter-${active.id}`} data-state="enter" data-dir={dir} className="showcase-content absolute inset-0">
-          <ShowcaseBody team={active} />
+          <ShowcaseBody team={active} teams={teams} />
         </div>
       </div>
     </article>

@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 import SkylabLogo from "../SkylabLogo";
 import { Magnetic } from "./utils";
-import { TEAMS, TONE } from "@/data/teams";
+import { TONE } from "@/data/teams";
 
 const pad = (n) => String(n).padStart(2, "0");
 
@@ -18,7 +18,23 @@ const item = {
   show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
 };
 
-function TeamsGrid() {
+function SkeletonTile({ i }) {
+  return (
+    <div
+      className="flex flex-col items-start gap-2 rounded-lg border border-white/8 bg-white/2 px-3 py-3 animate-pulse"
+      style={{ animationDelay: `${i * 60}ms` }}
+    >
+      <div className="h-7 w-7 rounded-md border border-white/8 bg-white/4" />
+      <div className="min-w-0 w-full">
+        <div className="h-3 w-3/5 rounded bg-white/8" />
+        <div className="h-2 w-5 rounded bg-white/5 mt-1.5" />
+      </div>
+    </div>
+  );
+}
+
+function TeamsGrid({ teams, loading }) {
+  const showSkeleton = loading && teams.length === 0;
   return (
     <div className="rounded-xl border border-white/10 bg-neutral-950/60 backdrop-blur-sm overflow-hidden shadow-[0_24px_64px_-32px_rgba(0,0,0,0.6)]">
       <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-white/6 bg-white/1.5">
@@ -26,10 +42,13 @@ function TeamsGrid() {
         <div className="h-2 w-2 rounded-full bg-white/15" />
         <div className="h-2 w-2 rounded-full bg-white/15" />
         <span className="ml-3 font-mono text-[10px] text-neutral-500 tracking-wider lowercase">ekipler.index</span>
-        <span className="ml-auto font-mono text-[10px] text-neutral-700">{TEAMS.length} alan</span>
+        <span className="ml-auto font-mono text-[10px] text-neutral-700">
+          {showSkeleton ? "—" : `${teams.length} alan`}
+        </span>
       </div>
       <div className="p-3 grid grid-cols-3 gap-2">
-        {TEAMS.map((t, i) => {
+        {showSkeleton && Array.from({ length: 9 }).map((_, i) => <SkeletonTile key={i} i={i} />)}
+        {teams.map((t, i) => {
           const Icon = t.icon;
           const tone = TONE[t.tone];
           return (
@@ -78,7 +97,7 @@ function TeamsGrid() {
   );
 }
 
-export default function Hero() {
+export default function Hero({ teams = [], meta }) {
   const logoRef = useRef(null);
 
   useEffect(() => {
@@ -110,7 +129,8 @@ export default function Hero() {
     };
   }, []);
 
-  const totalMembers = TEAMS.reduce((sum, t) => sum + (t.members || 0), 0);
+  const loading = Boolean(meta?.isLoading) && teams.length === 0;
+  const totalMembers = teams.reduce((sum, t) => sum + (t.members || 0), 0);
 
   return (
     <section className="relative px-5 md:px-10 pt-28 md:pt-32 pb-24 min-h-screen flex items-center overflow-x-clip">
@@ -175,12 +195,12 @@ export default function Hero() {
 
             <motion.div variants={item} className="flex items-center gap-6 font-mono text-[11px] text-neutral-600">
               <div className="flex items-center gap-2">
-                <span className="text-white text-lg font-bold leading-none">{TEAMS.length}</span>
+                <span className="text-white text-lg font-bold leading-none">{loading ? "—" : teams.length}</span>
                 <span>ekip</span>
               </div>
               <div className="w-px h-6 bg-neutral-800" />
               <div className="flex items-center gap-2">
-                <span className="text-white text-lg font-bold leading-none">{totalMembers}</span>
+                <span className="text-white text-lg font-bold leading-none">{loading ? "—" : totalMembers}</span>
                 <span>üye</span>
               </div>
               <div className="w-px h-6 bg-neutral-800" />
@@ -192,7 +212,7 @@ export default function Hero() {
           </div>
 
           <motion.div variants={item} className="relative min-w-0">
-            <TeamsGrid />
+            <TeamsGrid teams={teams} loading={loading} />
           </motion.div>
         </motion.div>
       </div>

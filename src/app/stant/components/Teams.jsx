@@ -1,40 +1,40 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Pause, Play } from "lucide-react";
-import { TEAMS } from "@/data/teams";
+import { ArrowLeft, ArrowRight, Pause, Play, Loader2 } from "lucide-react";
 import TeamLogoTile from "./TeamLogoTile";
 import Showcase from "./Showcase";
 
 const AUTO_INTERVAL_MS = 8000;
 const isRecruiting = (t) => Boolean(t.recruiting && t.applyUrl);
 
-export default function Teams() {
+function TeamsView({ teams }) {
   const [idx, setIdx] = useState(0);
   const [dir, setDir] = useState("forward");
   const [auto, setAuto] = useState(false);
   const stripRef = useRef(null);
 
-  const team = TEAMS[idx];
-  const openCount = useMemo(() => TEAMS.filter(isRecruiting).length, []);
+  const safeIdx = Math.min(idx, teams.length - 1);
+  const team = teams[safeIdx];
+  const openCount = useMemo(() => teams.filter(isRecruiting).length, [teams]);
 
   const goTo = useCallback((next) => {
     setIdx((prev) => {
       if (next === prev) return prev;
-      const total = TEAMS.length;
+      const total = teams.length;
       const delta = (((next - prev) % total) + total) % total;
       setDir(delta <= total / 2 ? "forward" : "backward");
       return next;
     });
-  }, []);
+  }, [teams.length]);
 
   const go = useCallback((delta) => {
     setIdx((prev) => {
-      const total = TEAMS.length;
+      const total = teams.length;
       setDir(delta >= 0 ? "forward" : "backward");
       return (prev + delta + total) % total;
     });
-  }, []);
+  }, [teams.length]);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -46,14 +46,14 @@ export default function Teams() {
         go(-1);
       } else if (/^[1-9]$/.test(e.key)) {
         const n = parseInt(e.key, 10) - 1;
-        if (n < TEAMS.length) goTo(n);
+        if (n < teams.length) goTo(n);
       } else if (e.key.toLowerCase() === "p") {
         setAuto((a) => !a);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [go, goTo]);
+  }, [go, goTo, teams.length]);
 
   useEffect(() => {
     if (!auto) return;
@@ -62,7 +62,7 @@ export default function Teams() {
   }, [auto, go]);
 
   useEffect(() => {
-    const node = stripRef.current?.querySelector(`[data-tile="${idx}"]`);
+    const node = stripRef.current?.querySelector(`[data-tile="${safeIdx}"]`);
     if (!node || !stripRef.current) return;
     const c = stripRef.current;
     const r = node.getBoundingClientRect();
@@ -70,7 +70,7 @@ export default function Teams() {
     if (r.left < cr.left + 8 || r.right > cr.right - 8) {
       c.scrollTo({ left: node.offsetLeft - 12, behavior: "smooth" });
     }
-  }, [idx]);
+  }, [safeIdx]);
 
   return (
     <div className="relative flex-1 min-h-0 flex flex-col px-4 md:px-6 xl:px-10 pb-4 md:pb-6 xl:pb-8 short-820:pb-3 short-700:pb-2 gap-3 md:gap-4 xl:gap-5 short-820:gap-2.5 short-700:gap-2">
@@ -78,9 +78,9 @@ export default function Teams() {
         <div ref={stripRef} role="tablist" aria-label="Ekipler"
           className="flex-1 min-w-0 flex items-stretch gap-2 overflow-x-auto scroll-smooth no-scrollbar"
         >
-          {TEAMS.map((t, i) => (
+          {teams.map((t, i) => (
             <div key={t.id} data-tile={i} className="contents">
-              <TeamLogoTile team={t} index={i} isActive={i === idx} onClick={() => goTo(i)} />
+              <TeamLogoTile team={t} index={i} isActive={i === safeIdx} onClick={() => goTo(i)} />
             </div>
           ))}
         </div>
@@ -111,7 +111,7 @@ export default function Teams() {
       </div>
 
       <div className="relative flex-1 min-h-[60dvh] overflow-hidden">
-        <Showcase team={team} dir={dir} />
+        <Showcase team={team} dir={dir} teams={teams} />
       </div>
 
       <div className="flex items-center gap-4 short-820:gap-3 short-700:gap-2 font-mono text-[10.5px] short-700:text-[9.5px] text-neutral-600 tracking-[0.06em] uppercase">
@@ -156,4 +156,30 @@ export default function Teams() {
       </div>
     </div>
   );
+}
+
+function TeamsStatus({ isLoading, error }) {
+  return (
+    <div className="relative flex-1 min-h-0 flex flex-col items-center justify-center gap-3 px-4">
+      {isLoading ? (
+        <>
+          <Loader2 size={22} strokeWidth={2} className="text-neutral-500 animate-spin" />
+          <p className="text-neutral-500 text-sm font-mono uppercase tracking-[0.18em]">
+            Ekipler yükleniyor…
+          </p>
+        </>
+      ) : (
+        <p className="text-neutral-500 text-sm font-mono uppercase tracking-[0.18em]">
+          {error ? "Ekipler yüklenemedi" : "Henüz ekip yok"}
+        </p>
+      )}
+    </div>
+  );
+}
+
+export default function Teams({ teams = [], meta }) {
+  if (teams.length === 0) {
+    return <TeamsStatus isLoading={meta?.isLoading} error={meta?.error} />;
+  }
+  return <TeamsView teams={teams} />;
 }

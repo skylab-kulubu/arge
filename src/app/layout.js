@@ -70,9 +70,9 @@ export default function RootLayout({ children }) {
       lang="tr"
       className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <CmsPage>
-        <body className="bg-neutral-950 text-white">{children}</body>
-      </CmsPage>
+      <body className="bg-neutral-950 text-white">
+        <CmsPage>{children}</CmsPage>
+      </body>
     </html>
   );
 }

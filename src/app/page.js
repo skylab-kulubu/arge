@@ -8,8 +8,9 @@ import { Spotlight, useReveal, ScrollContainerContext } from "./components/landi
 import Hero from "./components/landing/Hero";
 import Teams from "./components/landing/Teams";
 import Onboarding from "./components/landing/Onboarding";
+import { TeamsCollection } from "@/data/teams";
 
-export function Page() {
+export default function Page() {
   const scrollRef = useRef(null);
   useReveal(scrollRef);
 
@@ -23,8 +24,14 @@ export function Page() {
 
         <div className="relative z-10">
           <Header scrollRef={scrollRef} />
-          <Hero />
-          <Teams />
+          <TeamsCollection>
+            {(teams, meta) => (
+              <>
+                <Hero teams={teams} meta={meta} />
+                <Teams teams={teams} meta={meta} />
+              </>
+            )}
+          </TeamsCollection>
           <Onboarding />
           <Footer />
         </div>

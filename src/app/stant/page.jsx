@@ -7,6 +7,7 @@ import { ArrowLeft, Monitor } from "lucide-react";
 import Background from "../components/Background";
 import Header from "./components/Header";
 import Teams from "./components/Teams";
+import { TeamsCollection } from "@/data/teams";
 
 function useAmbience() {
   useEffect(() => {
@@ -100,7 +101,9 @@ export default function StantPage() {
 
       <div className="relative z-10 h-screen w-screen hidden lg:flex flex-col">
         <Header />
-        <Teams />
+        <TeamsCollection>
+          {(teams, meta) => <Teams teams={teams} meta={meta} />}
+        </TeamsCollection>
       </div>
     </main>
   );

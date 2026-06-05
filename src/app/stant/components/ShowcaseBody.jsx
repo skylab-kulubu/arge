@@ -10,13 +10,18 @@ import {
   ArrowRight,
   ScanLine,
 } from "lucide-react";
-import { TEAMS, TONE, STATUS } from "@/data/teams";
+import { TONE, STATUS } from "@/data/teams";
 import QRCode from "./QRCode";
 
 const pad = (n) => String(n).padStart(2, "0");
 const isRecruiting = (t) => Boolean(t.recruiting && t.applyUrl);
 const dimRing = (ring, alpha = 0.14) =>
   ring.replace(/,\s*[\d.]+\s*\)\s*$/, `, ${alpha})`);
+
+/** RichText (longDesc) ships sanitised HTML from the CMS, so render it as HTML. */
+function RichText({ html, className }) {
+  return <div className={className} dangerouslySetInnerHTML={{ __html: html || "" }} />;
+}
 
 function RecruitingChip({ recruiting }) {
   if (recruiting) {
@@ -61,11 +66,11 @@ function StatusPill({ status }) {
   );
 }
 
-export default function ShowcaseBody({ team }) {
+export default function ShowcaseBody({ team, teams = [] }) {
   const tone = TONE.skylab;
   const Icon = team.icon;
   const recruiting = isRecruiting(team);
-  const num = pad(TEAMS.findIndex((t) => t.id === team.id) + 1);
+  const num = pad(teams.findIndex((t) => t.id === team.id) + 1);
 
   return (
     <div className="relative h-full grid grid-cols-1 lg:grid-cols-[1.35fr_1fr] min-h-0">
@@ -74,7 +79,7 @@ export default function ShowcaseBody({ team }) {
       >
         <div className="flex items-center gap-2 md:gap-3 flex-wrap mb-4 md:mb-5">
           <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-neutral-500">
-            {num} / {pad(TEAMS.length)} · EKİP
+            {num} / {pad(teams.length)} · EKİP
           </span>
           {team.topics?.map((t) => (
             <span key={t} className="font-mono text-[10px] tracking-[0.16em] uppercase text-neutral-500 before:content-['·'] before:mr-3 before:text-neutral-700">
@@ -107,15 +112,19 @@ export default function ShowcaseBody({ team }) {
           <span className="h-px flex-1" style={{ background: dimRing(tone.ring, 0.18) }} />
         </div>
 
-        <p className="text-neutral-200 text-[13px] md:text-[14.5px] xl:text-[15.5px] leading-[1.65] md:leading-[1.75] max-w-[68ch]">
-          {team.longDesc}
-        </p>
+        <RichText
+          html={team.longDesc}
+          className="text-neutral-200 text-[13px] md:text-[14.5px] xl:text-[15.5px] leading-[1.65] md:leading-[1.75] max-w-[68ch]"
+        />
 
         <div className="mt-auto pt-5 md:pt-7 grid grid-cols-1 md:grid-cols-[auto_1fr] gap-x-5 md:gap-x-7 gap-y-3 md:gap-y-4 items-start">
           <div className="flex flex-col gap-2 min-w-0">
             <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-neutral-500">
               Ekip {team.leads.length > 1 ? "Liderleri" : "Lideri"}
             </span>
+            {team.leads.length === 0 ? (
+              <span className="text-[13.5px] text-neutral-500 italic leading-snug">Henüz belirlenmedi</span>
+            ) : (
             <div className="flex items-center gap-3 min-w-0">
               <div className="flex shrink-0">
                 {team.leads.map((l, i) => (
@@ -148,6 +157,7 @@ export default function ShowcaseBody({ team }) {
                 ))}
               </span>
             </div>
+            )}
           </div>
 
           <div className="flex flex-col gap-2 min-w-0">
