@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { CollectionRegion } from "inscribed";
+import { CollectionRegion } from "inscribed/collections";
 import { teamsFromItems } from "./fromCollection.js";
 
 const TEAMS_COLLECTION_KEY = "Teams";
