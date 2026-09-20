@@ -84,23 +84,37 @@
 ### Installation
 
 ```bash
-git clone https://github.com/fatiihnaz/arge.git
+git clone https://github.com/skylab-kulubu/arge.git
 cd arge
 npm install
 ```
 
 ### Environment Variables
 
-The project does **not** require a `.env` file to run. The variable below is purely an optional override for SEO metadata and the sitemap:
+The application reads CMS and authentication settings from the environment:
 
-| Variable | Required | Default | Description |
-| --- | --- | --- | --- |
-| `NEXT_PUBLIC_SITE_URL` | No | `https://arge.yildizskylab.com` | Canonical site URL used in `metadataBase`, `sitemap.xml`, and `robots.txt`. |
+| Variable | Required | Description |
+| --- | --- | --- |
+| `CMS_URL` | Yes | CMS API base URL. |
+| `CMS_CDN_URL` | Yes | CMS media base URL. |
+| `NEXT_PUBLIC_SITE_URL` | Yes | Canonical site URL used in metadata, sitemap, and robots. |
+| `KEYCLOAK_ISSUER` | Yes | Keycloak realm URL. |
+| `KEYCLOAK_CLIENT_ID` | Yes | Keycloak client ID. |
+| `KEYCLOAK_CLIENT_SECRET` | Yes | Keycloak client secret. |
+| `NEXTAUTH_URL` | Yes | Public application URL. |
+| `NEXTAUTH_SECRET` | Yes | NextAuth session secret. |
 
 To override locally, create a `.env.local` file in the project root with a single line:
 
-```bash
+```env
+CMS_URL=http://localhost:5000
+CMS_CDN_URL=http://localhost:5000/media
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
+KEYCLOAK_ISSUER=http://localhost:8080/realms/e-skylab
+KEYCLOAK_CLIENT_ID=arge
+KEYCLOAK_CLIENT_SECRET=change-me
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=change-me
 ```
 
 ### Running the App

@@ -183,7 +183,7 @@ export default function Hero({ teams = [], meta }) {
                 </a>
               </Magnetic>
 
-              <a href="https://forms.yildizskylab.com/" className="group inline-flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3 text-neutral-400 font-medium text-[11px] sm:text-xs hover:text-white transition-colors duration-300"
+              <a href={process.env.NEXT_PUBLIC_FORMS_URL ?? "http://localhost:3001"} className="group inline-flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3 text-neutral-400 font-medium text-[11px] sm:text-xs hover:text-white transition-colors duration-300"
               >
                 <span>Aramıza katıl</span>
                 <ArrowUpRight
