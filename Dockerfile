@@ -6,19 +6,15 @@ RUN npm ci
 FROM --platform=linux/amd64 node:22-alpine AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
-ARG CMS_URL
-ARG CMS_CDN_URL
+# Only NEXT_PUBLIC_* values are inlined by `next build`. CMS_URL, CMS_CDN_URL, KEYCLOAK_*
+# and NEXTAUTH_* are runtime settings: give them to the container, not to the build.
 ARG NEXT_PUBLIC_SITE_URL
 ARG NEXT_PUBLIC_FORMS_URL
-ENV CMS_URL=$CMS_URL
-ENV CMS_CDN_URL=$CMS_CDN_URL
 ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 ENV NEXT_PUBLIC_FORMS_URL=$NEXT_PUBLIC_FORMS_URL
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN test -n "$CMS_URL" \
-    && test -n "$CMS_CDN_URL" \
-    && test -n "$NEXT_PUBLIC_SITE_URL" \
+RUN test -n "$NEXT_PUBLIC_SITE_URL" \
     && test -n "$NEXT_PUBLIC_FORMS_URL" \
     && npx next build
 

@@ -91,18 +91,21 @@ npm install
 
 ### Environment Variables
 
-The application reads CMS and authentication settings from the environment:
+The application reads CMS and authentication settings from the environment.
+`NEXT_PUBLIC_*` values are inlined by `next build`, so they are build arguments of the container image.
+Everything else is read when the server runs, so it belongs to the container's environment.
 
-| Variable | Required | Description |
-| --- | --- | --- |
-| `CMS_URL` | Yes | CMS API base URL. |
-| `CMS_CDN_URL` | Yes | CMS media base URL. |
-| `NEXT_PUBLIC_SITE_URL` | Yes | Canonical site URL used in metadata, sitemap, and robots. |
-| `KEYCLOAK_ISSUER` | Yes | Keycloak realm URL. |
-| `KEYCLOAK_CLIENT_ID` | Yes | Keycloak client ID. |
-| `KEYCLOAK_CLIENT_SECRET` | Yes | Keycloak client secret. |
-| `NEXTAUTH_URL` | Yes | Public application URL. |
-| `NEXTAUTH_SECRET` | Yes | NextAuth session secret. |
+| Variable | When | Required | Description |
+| --- | --- | --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | build | Yes | Canonical site URL used in metadata, sitemap, and robots. |
+| `NEXT_PUBLIC_FORMS_URL` | build | Yes | Forms site linked from the landing page. |
+| `CMS_URL` | runtime | Yes | CMS API base URL. |
+| `CMS_CDN_URL` | runtime | Yes | CMS media base URL. |
+| `KEYCLOAK_ISSUER` | runtime | Yes | Keycloak realm URL. |
+| `KEYCLOAK_CLIENT_ID` | runtime | Yes | Keycloak client ID. |
+| `KEYCLOAK_CLIENT_SECRET` | runtime | Yes | Keycloak client secret. |
+| `NEXTAUTH_URL` | runtime | Yes | Public application URL. |
+| `NEXTAUTH_SECRET` | runtime | Yes | NextAuth session secret. Without it every server-rendered page answers 500. |
 
 To override locally, create a `.env.local` file in the project root with a single line:
 
@@ -132,6 +135,19 @@ npm run start
 # Lint
 npm run lint
 ```
+
+### Deployment
+
+The site runs on SKY LAB's Dokploy as a container from `ghcr.io/skylab-kulubu/arge` (port 3000).
+`.github/workflows/ghcr.yml` builds it:
+
+| Branch | Image tags | Deployed to |
+| --- | --- | --- |
+| `main` | `:sandbox`, `:latest`, `:<sha>` | sandbox (`sandbox-arge.yildizskylab.com`) through `DOKPLOY_SANDBOX_DEPLOY_HOOK` |
+| `production` | `:production`, `:<sha>` | production (`arge.yildizskylab.com`) through `DOKPLOY_DEPLOY_HOOK` |
+
+A missing hook secret skips the deploy and says so in the run. Runtime variables live in the Dokploy application;
+secrets there are OpenBao references, not values.
 
 ---
 

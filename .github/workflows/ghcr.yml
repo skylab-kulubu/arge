@@ -1,9 +1,18 @@
 name: GHCR
 
+# Club convention (same as skylab-site and core-frontend):
+#   production branch -> :production, :<sha>             -> DOKPLOY_DEPLOY_HOOK (production app)
+#   main              -> :latest, :sandbox, :<sha>       -> DOKPLOY_SANDBOX_DEPLOY_HOOK (sandbox app)
+#   v* tags           -> :<sha> only, production URLs, no deploy
+# Only NEXT_PUBLIC_* values are baked into the image, so the sandbox and production images
+# differ only in their public URLs. CMS_URL, CMS_CDN_URL, KEYCLOAK_* and NEXTAUTH_* are read
+# at runtime from the Dokploy environment.
+
 on:
   push:
     branches: [main, production]
     tags: ["v*.*.*"]
+  workflow_dispatch:
 
 jobs:
   build-and-push:
@@ -35,13 +44,9 @@ jobs:
         run: |
           ref='${{ github.ref_name }}'
           if [ "$ref" = production ] || [[ "$ref" == v* ]]; then
-            echo "cms_url=https://api.yildizskylab.com/api" >> "$GITHUB_OUTPUT"
-            echo "cms_cdn_url=https://api.yildizskylab.com/api/media" >> "$GITHUB_OUTPUT"
             echo "site_url=https://arge.yildizskylab.com" >> "$GITHUB_OUTPUT"
             echo "forms_url=https://forms.yildizskylab.com" >> "$GITHUB_OUTPUT"
           else
-            echo "cms_url=https://sandbox-api.yildizskylab.com/api" >> "$GITHUB_OUTPUT"
-            echo "cms_cdn_url=https://sandbox-api.yildizskylab.com/api/media" >> "$GITHUB_OUTPUT"
             echo "site_url=https://sandbox-arge.yildizskylab.com" >> "$GITHUB_OUTPUT"
             echo "forms_url=https://sandbox-forms.yildizskylab.com" >> "$GITHUB_OUTPUT"
           fi
@@ -52,8 +57,6 @@ jobs:
           platforms: linux/amd64
           tags: ${{ steps.tags.outputs.list }}
           build-args: |
-            CMS_URL=${{ steps.environment.outputs.cms_url }}
-            CMS_CDN_URL=${{ steps.environment.outputs.cms_cdn_url }}
             NEXT_PUBLIC_SITE_URL=${{ steps.environment.outputs.site_url }}
             NEXT_PUBLIC_FORMS_URL=${{ steps.environment.outputs.forms_url }}
       - name: Notify Dokploy
@@ -65,11 +68,14 @@ jobs:
         run: |
           if [ "$REF_NAME" = main ]; then
             HOOK="$SANDBOX_HOOK"
+            SECRET_NAME=DOKPLOY_SANDBOX_DEPLOY_HOOK
           else
             HOOK="$PRODUCTION_HOOK"
+            SECRET_NAME=DOKPLOY_DEPLOY_HOOK
           fi
           if [ -z "$HOOK" ]; then
             echo "Dokploy hook unset for ${REF_NAME}; skip"
+            echo "::notice title=Dokploy deploy skipped::${SECRET_NAME} is not set, so the ${REF_NAME} image was pushed to GHCR but no Dokploy app was redeployed."
             exit 0
           fi
           curl -fsS -X POST "$HOOK"
