@@ -4,7 +4,9 @@ import { useMemo } from "react";
 import { CollectionRegion } from "inscribed/collections";
 import { teamsFromItems } from "./fromCollection.js";
 
-const TEAMS_COLLECTION_KEY = "Teams";
+// inscribed only knows lowercase collection keys (^[a-z0-9]+(-[a-z0-9]+)*$)
+// and answers 404 to the old cms-backend's "Teams".
+const TEAMS_COLLECTION_KEY = "teams";
 
 function TeamsBinding({ items, meta, children }) {
   const teams = useMemo(() => teamsFromItems(items), [items]);
