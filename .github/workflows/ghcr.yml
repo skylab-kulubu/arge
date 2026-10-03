@@ -4,9 +4,9 @@ name: GHCR
 #   production branch -> :production, :<sha>             -> DOKPLOY_DEPLOY_HOOK (production app)
 #   main              -> :latest, :sandbox, :<sha>       -> DOKPLOY_SANDBOX_DEPLOY_HOOK (sandbox app)
 #   v* tags           -> :<sha> only, production URLs, no deploy
-# Only NEXT_PUBLIC_* values are baked into the image, so the sandbox and production images
-# differ only in their public URLs. CMS_URL, CMS_CDN_URL, KEYCLOAK_* and NEXTAUTH_* are read
-# at runtime from the Dokploy environment.
+# Only NEXT_PUBLIC_* values and API_BASE_URL (core's host, for the CMS image bridge) are baked
+# into the image, so the sandbox and production images differ only in those URLs. CMS_URL,
+# KEYCLOAK_* and NEXTAUTH_* are read at runtime from the Dokploy environment.
 
 on:
   push:
@@ -44,9 +44,11 @@ jobs:
         run: |
           ref='${{ github.ref_name }}'
           if [ "$ref" = production ] || [[ "$ref" == v* ]]; then
+            echo "api_url=https://api.yildizskylab.com" >> "$GITHUB_OUTPUT"
             echo "site_url=https://arge.yildizskylab.com" >> "$GITHUB_OUTPUT"
             echo "forms_url=https://forms.yildizskylab.com" >> "$GITHUB_OUTPUT"
           else
+            echo "api_url=https://sandbox-api.yildizskylab.com" >> "$GITHUB_OUTPUT"
             echo "site_url=https://sandbox-arge.yildizskylab.com" >> "$GITHUB_OUTPUT"
             echo "forms_url=https://sandbox-forms.yildizskylab.com" >> "$GITHUB_OUTPUT"
           fi
@@ -57,6 +59,7 @@ jobs:
           platforms: linux/amd64
           tags: ${{ steps.tags.outputs.list }}
           build-args: |
+            API_BASE_URL=${{ steps.environment.outputs.api_url }}
             NEXT_PUBLIC_SITE_URL=${{ steps.environment.outputs.site_url }}
             NEXT_PUBLIC_FORMS_URL=${{ steps.environment.outputs.forms_url }}
       - name: Notify Dokploy

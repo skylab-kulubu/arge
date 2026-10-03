@@ -8,7 +8,10 @@ export const CmsPage = createCmsPage({
   Provider: NextAuthCmsProvider,
   config: {
     baseUrl: process.env.CMS_URL ?? "http://localhost:5000",
-    cdnUrl: process.env.CMS_CDN_URL,
+    // Image uploads go through the site's own route, which checks the editor
+    // and forwards them to core /v1/media (src/app/api/cms-media/route.js).
+    // CMS_CDN_URL is no longer read.
+    cdnUrl: "/api/cms-media",
   },
   getServiceToken: getClientCredentialsToken,
   ...withCmsAuth(authOptions),
