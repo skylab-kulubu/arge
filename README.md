@@ -92,15 +92,15 @@ npm install
 ### Environment Variables
 
 The application reads CMS and authentication settings from the environment.
-`NEXT_PUBLIC_*` values are inlined by `next build`, so they are build arguments of the container image.
+`NEXT_PUBLIC_*` values and `API_BASE_URL` are inlined by `next build`, so they are build arguments of the container image.
 Everything else is read when the server runs, so it belongs to the container's environment.
 
 | Variable | When | Required | Description |
 | --- | --- | --- | --- |
+| `API_BASE_URL` | build | Yes | Core API origin. The CMS image bridge (`/api/cms-media`) forwards editor uploads to its `/v1/media`. Without it, `CMS_URL`'s origin is used. |
 | `NEXT_PUBLIC_SITE_URL` | build | Yes | Canonical site URL used in metadata, sitemap, and robots. |
 | `NEXT_PUBLIC_FORMS_URL` | build | Yes | Forms site linked from the landing page. |
 | `CMS_URL` | runtime | Yes | CMS API base URL. |
-| `CMS_CDN_URL` | runtime | Yes | CMS media base URL. |
 | `KEYCLOAK_ISSUER` | runtime | Yes | Keycloak realm URL. |
 | `KEYCLOAK_CLIENT_ID` | runtime | Yes | Keycloak client ID. |
 | `KEYCLOAK_CLIENT_SECRET` | runtime | Yes | Keycloak client secret. |
@@ -111,7 +111,6 @@ To override locally, create a `.env.local` file in the project root with a singl
 
 ```env
 CMS_URL=http://localhost:5000
-CMS_CDN_URL=http://localhost:5000/media
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 KEYCLOAK_ISSUER=http://localhost:8080/realms/e-skylab
 KEYCLOAK_CLIENT_ID=arge
