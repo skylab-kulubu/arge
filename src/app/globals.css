@@ -1,7 +1,7 @@
 @import "tailwindcss";
-/* Tokens, theme, fonts, scrollbar and base styles come from skylcn-ui (ADR 0055).
-   This file only holds arge's own art layer: the atmospheric background, the hero
-   logo, the reveal animations and the stand (/stant) screen. */
+/* Tokens come from skylcn-ui (ADR 0055); its components need its theme too.
+   This file holds arge's own visual layer: the scrollbar, the atmospheric background,
+   the hero logo, the reveal animations and the stand (/stant) screen. */
 @import "@skylab-kulubu/skylcn-ui/theme.css";
 
 /* Stant ekranındaki kademeli kompaktlaşma için yükseklik bazlı variant'lar */
@@ -18,6 +18,30 @@ body {
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
 }
+
+:root {
+  --sb-size: 10px;
+  --sb-radius: 9999px;
+  --sb-track: transparent;
+  --sb-thumb: #3f3f46;
+  --sb-thumb-hover: #52525b;
+  --sb-border: 2px;
+}
+
+/* The site's own scrollbar; unlayered, so it wins over skylcn's scrollbar utility */
+.scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sb-thumb) var(--sb-track);
+}
+.scrollbar::-webkit-scrollbar { width: var(--sb-size); height: var(--sb-size); }
+.scrollbar::-webkit-scrollbar-track { background: var(--sb-track); }
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--sb-thumb);
+  background-clip: border-box;
+  border-radius: var(--sb-radius);
+  border: var(--sb-border) solid var(--sb-track);
+}
+.scrollbar::-webkit-scrollbar-thumb:hover { background-color: var(--sb-thumb-hover); }
 
 /* The art layer's near-black, a step darker than skylcn's --background */
 :root {
@@ -182,6 +206,9 @@ body {
   60%  { opacity: .14; filter: drop-shadow(0 0 100px color-mix(in srgb, var(--skylab-500) 35%, transparent)) blur(0); }
   100% { opacity: .09; filter: drop-shadow(0 0  80px color-mix(in srgb, var(--skylab-500) 22%, transparent)) blur(0); }
 }
+
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
 
 .qr-svg svg { width: 100%; height: 100%; display: block; }
 
