@@ -1,5 +1,4 @@
-import { Space_Grotesk, Space_Mono } from "next/font/google";
-import { ThemeScript } from "@skylab-kulubu/skylcn-ui";
+import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { CmsPage } from "@/lib/cms";
 
@@ -10,10 +9,9 @@ const spaceGrotesk = Space_Grotesk({
   display: "swap",
 });
 
-const spaceMono = Space_Mono({
+const jetbrainsMono = JetBrains_Mono({
   variable: "--skylcn-font-mono",
   subsets: ["latin"],
-  weight: ["400", "700"],
   display: "swap",
 });
 
@@ -71,13 +69,10 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="tr"
-      className={`${spaceGrotesk.variable} ${spaceMono.variable} h-full antialiased`}
-      suppressHydrationWarning
+      data-theme="dark"
+      className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <head>
-        <ThemeScript />
-      </head>
-      <body>
+      <body className="bg-neutral-950 text-white">
         <CmsPage>{children}</CmsPage>
       </body>
     </html>
