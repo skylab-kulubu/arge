@@ -1,16 +1,19 @@
-import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Space_Grotesk, Space_Mono } from "next/font/google";
+import { ThemeScript } from "@skylab-kulubu/skylcn-ui";
 import "./globals.css";
 import { CmsPage } from "@/lib/cms";
 
+// skylcn-ui's theme reads the faces from --skylcn-font-sans and --skylcn-font-mono.
 const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
+  variable: "--skylcn-font-sans",
   subsets: ["latin"],
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
+const spaceMono = Space_Mono({
+  variable: "--skylcn-font-mono",
   subsets: ["latin"],
+  weight: ["400", "700"],
   display: "swap",
 });
 
@@ -68,9 +71,13 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="tr"
-      className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${spaceGrotesk.variable} ${spaceMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="bg-neutral-950 text-white">
+      <head>
+        <ThemeScript />
+      </head>
+      <body>
         <CmsPage>{children}</CmsPage>
       </body>
     </html>

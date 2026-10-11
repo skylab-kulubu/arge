@@ -1,22 +1,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Menu } from "lucide-react";
 import { motion } from "framer-motion";
-import { useRouter } from 'next/navigation';
 import Link from "next/link";
+import {
+  Button,
+  buttonVariants,
+  cn,
+  Drawer,
+  DrawerBody,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+  NavigationMenu,
+  NavigationMenuItem,
+} from "@skylab-kulubu/skylcn-ui";
 
 const TOP_THRESHOLD = 40;
 
-const textVariants = {
-  initial: { y: 0, opacity: 1, transition: { duration: 0.25, ease: "easeIn" } },
-  hover: { y: -20, opacity: 0, transition: { duration: 0.25, ease: "easeOut" } },
-};
-
-const iconVariants = {
-  initial: { y: 20, opacity: 0, transition: { duration: 0.25, ease: "easeOut" } },
-  hover: { y: 0, opacity: 1, transition: { duration: 0.25, ease: "easeIn", delay: 0.05 } },
-};
+// Sections of the landing page (Teams.jsx, Onboarding.jsx)
+const SECTIONS = [
+  { label: "Ekipler", href: "#ekipler" },
+  { label: "Katıl", href: "#katil" },
+];
 
 function useIsAtTop(scrollRef) {
   const [atTop, setAtTop] = useState(true);
@@ -53,9 +61,46 @@ function ContextTag({ show }) {
   );
 }
 
+function PhoneMenu() {
+  const [open, setOpen] = useState(false);
+  const close = () => setOpen(false);
+
+  return (
+    <Drawer open={open} onOpenChange={setOpen} side="right">
+      <DrawerTrigger render={<Button variant="ghost" size="icon" aria-label="Menüyü aç" />}>
+        <Menu />
+      </DrawerTrigger>
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerTitle>SKY LAB Ar-Ge</DrawerTitle>
+        </DrawerHeader>
+        <DrawerBody className="flex flex-col gap-1">
+          {SECTIONS.map((s) => (
+            <a
+              key={s.href}
+              href={s.href}
+              onClick={close}
+              className={cn(buttonVariants({ variant: "ghost", size: "lg" }), "justify-start")}
+            >
+              {s.label}
+            </a>
+          ))}
+          <Link
+            href="/stant"
+            onClick={close}
+            className={cn(buttonVariants({ variant: "primary", size: "lg" }), "mt-3 justify-between")}
+          >
+            Stant Görünümü
+            <ChevronRight />
+          </Link>
+        </DrawerBody>
+      </DrawerContent>
+    </Drawer>
+  );
+}
+
 export default function Header({ scrollRef }) {
   const atTop = useIsAtTop(scrollRef);
-  const router = useRouter();
 
   return (
     <motion.header
@@ -75,19 +120,21 @@ export default function Header({ scrollRef }) {
           <ContextTag show={atTop} />
         </Link>
 
-        <motion.button onClick={() => router.push('/stant')} initial="initial" whileHover="hover"
-          className={`min-w-24 h-8 relative inline-flex items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-neutral-100 transition-colors hover:border-pink-100/40 hover:bg-pink-100/30 hover:text-pink-100`}
-        >
-          <div className="relative flex flex-col items-center justify-center overflow-hidden">
-            <motion.span variants={textVariants} className="block whitespace-nowrap">
-              Stant Görünümü
-            </motion.span>
+        <div className="hidden md:flex items-center gap-2">
+          <NavigationMenu aria-label="Sayfa bölümleri">
+            {SECTIONS.map((s) => (
+              <NavigationMenuItem key={s.href} label={s.label} href={s.href} />
+            ))}
+          </NavigationMenu>
+          <Link href="/stant" className={cn(buttonVariants(), "group")}>
+            Stant Görünümü
+            <ChevronRight className="transition-transform duration-300 group-hover:translate-x-0.5" />
+          </Link>
+        </div>
 
-            <motion.span variants={iconVariants} className="absolute inset-0 flex items-center justify-center">
-              <ChevronRight size={16} />
-            </motion.span>
-          </div>
-        </motion.button>
+        <div className="md:hidden">
+          <PhoneMenu />
+        </div>
       </div>
     </motion.header>
   );

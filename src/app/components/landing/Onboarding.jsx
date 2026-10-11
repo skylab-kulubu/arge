@@ -80,7 +80,7 @@ export default function Onboarding() {
                   className="relative flex flex-col items-center lg:items-start text-center lg:text-left"
                 >
                   <div className="relative mb-5 lg:self-start">
-                    <div className={`h-2 w-2 rounded-full transition-all duration-500 ${lit[i] ? "bg-skylab-500 shadow-[0_0_8px_rgba(224,200,229,0.5)]" : "bg-neutral-700"}`}/>
+                    <div className={`h-2 w-2 rounded-full transition-all duration-500 ${lit[i] ? "bg-skylab-500 shadow-[0_0_8px_color-mix(in_srgb,var(--skylab-500)_50%,transparent)]" : "bg-neutral-700"}`}/>
                   </div>
 
                   <div className="font-mono text-[10px] text-neutral-600 tracking-[0.16em] uppercase mb-2">

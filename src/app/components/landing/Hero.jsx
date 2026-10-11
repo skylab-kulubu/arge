@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
+import { buttonVariants, cn } from "@skylab-kulubu/skylcn-ui";
 import SkylabLogo from "../SkylabLogo";
 import { Magnetic } from "./utils";
 import { TONE } from "@/data/teams";
@@ -138,7 +139,7 @@ export default function Hero({ teams = [], meta }) {
         className="hero-logo hero-logo--bloom"
         ref={logoRef}
         aria-hidden
-        style={{ "--fill-0": "#e0c8e5" }}
+        style={{ "--fill-0": "var(--skylab-500)" }}
       >
         <SkylabLogo />
       </div>
@@ -174,21 +175,29 @@ export default function Hero({ teams = [], meta }) {
 
             <motion.div variants={item} className="flex items-center gap-2 sm:gap-4 mb-12">
               <Magnetic strength={0.25}>
-                <a href="#ekipler" className="group inline-flex items-center gap-2 sm:gap-3 px-5 sm:px-7 py-2.5 sm:py-3 bg-neutral-900 border border-neutral-800 text-neutral-300 rounded-xl font-medium text-xs sm:text-sm hover:text-white hover:border-skylab-500/50 hover:bg-neutral-800 transition-all duration-300 hover:shadow-[0_0_20px_rgba(224,200,229,0.15)]">
-                  <span>Ekipleri keşfet</span>
+                <a
+                  href="#ekipler"
+                  className={cn(
+                    buttonVariants({ size: "lg" }),
+                    "group sm:h-11 sm:px-6 sm:text-sm hover:border-skylab-500/50 hover:shadow-[0_0_20px_color-mix(in_srgb,var(--skylab-500)_15%,transparent)]",
+                  )}
+                >
+                  Ekipleri keşfet
                   <ArrowDown
                     strokeWidth={2}
-                    className="w-4 h-4 transition-all duration-300 group-hover:translate-y-1 group-hover:text-skylab-500"
+                    className="transition-transform duration-300 group-hover:translate-y-0.5 group-hover:text-skylab-500"
                   />
                 </a>
               </Magnetic>
 
-              <a href={process.env.NEXT_PUBLIC_FORMS_URL ?? "http://localhost:3001"} className="group inline-flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3 text-neutral-400 font-medium text-[11px] sm:text-xs hover:text-white transition-colors duration-300"
+              <a
+                href={process.env.NEXT_PUBLIC_FORMS_URL ?? "http://localhost:3001"}
+                className={cn(buttonVariants({ variant: "ghost", size: "lg" }), "group")}
               >
-                <span>Aramıza katıl</span>
+                Aramıza katıl
                 <ArrowUpRight
                   strokeWidth={2}
-                  className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                  className="size-3! transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                 />
               </a>
             </motion.div>

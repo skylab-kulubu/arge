@@ -22,7 +22,7 @@ arge/
 │   ├── app/                      # Next.js App Router root
 │   │   ├── layout.js             # Root layout — fonts, metadata, OG tags, viewport
 │   │   ├── page.js               # Landing page — Hero + Teams + Onboarding + Footer
-│   │   ├── globals.css           # Tailwind v4 tokens, custom CSS, animation keyframes
+│   │   ├── globals.css           # skylcn-ui theme import + the site's art layer (background, keyframes)
 │   │   ├── robots.js             # Auto-generated robots.txt
 │   │   ├── sitemap.js            # Auto-generated sitemap.xml
 │   │   │
@@ -101,8 +101,9 @@ Content flows in a single direction: `data/teams` is plain JavaScript data → c
 ### Design System
 
 - **Theme** - Dark with neon accents; the primary brand tone is `skylab` (`rgb(224,200,229)`).
-- **Typography** - `Space Grotesk` (body / headings) + `JetBrains Mono` (labels, code, `font-mono` utility). Self-hosted via `next/font/google`.
-- **Styling** - Tailwind CSS v4 (`@tailwindcss/postcss`). Global tokens, `selection:`, scrollbar variants, and layered effects live in `src/app/globals.css`.
+- **Design system** - [`@skylab-kulubu/skylcn-ui`](https://github.com/skylab-kulubu/skylcn-ui) (ADR 0055): colours (`skylab-*`, `background`, `foreground`…), fonts, scrollbar and base styles come from its `theme.css`; buttons, the header's navigation menu and the phone drawer are its components. Don't copy its tokens or components here; change them in skylcn-ui.
+- **Typography** - `Space Grotesk` (body / headings) + `Space Mono` (labels, code, `font-mono` utility). Self-hosted via `next/font/google` and bound to skylcn-ui's `--skylcn-font-sans` / `--skylcn-font-mono`.
+- **Styling** - Tailwind CSS v4 (`@tailwindcss/postcss`). `src/app/globals.css` imports the skylcn-ui theme and holds only the site's own layered effects (atmospheric background, hero logo, stand screen).
 - **Iconography** - `lucide-react`. When adding icons, keep `strokeWidth` and sizes consistent with their neighbours.
 - **Animation** - Framer Motion 12; variants (`container`, `item`, `stepItem`) are declared at the top of each component. Preferred easing is `[0.16, 1, 0.3, 1]` and transitions sit in the 0.4–0.8s range.
 

@@ -76,7 +76,7 @@ function TeamsView({ teams }) {
     <div className="relative flex-1 min-h-0 flex flex-col px-4 md:px-6 xl:px-10 pb-4 md:pb-6 xl:pb-8 short-820:pb-3 short-700:pb-2 gap-3 md:gap-4 xl:gap-5 short-820:gap-2.5 short-700:gap-2">
       <div className="flex items-center gap-2 md:gap-3">
         <div ref={stripRef} role="tablist" aria-label="Ekipler"
-          className="flex-1 min-w-0 flex items-stretch gap-2 overflow-x-auto scroll-smooth no-scrollbar"
+          className="flex-1 min-w-0 flex items-stretch gap-2 overflow-x-auto scroll-smooth scrollbar-hidden"
         >
           {teams.map((t, i) => (
             <div key={t.id} data-tile={i} className="contents">
