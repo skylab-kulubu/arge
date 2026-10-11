@@ -3,11 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "predev": "cms-sync --app-root src/app",
     "dev": "next dev",
-    "prebuild": "cms-sync --app-root src/app",
     "build": "next build",
-    "sync": "cms-sync",
+    "sync": "cms-sync --app-root ./src/app",
     "test": "node --test \"test/*.test.mjs\""
   },
   "dependencies": {
