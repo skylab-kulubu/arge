@@ -65,6 +65,14 @@ function PhoneMenu() {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
 
+  // The trigger hides at md; close the drawer if the window widens past it while open
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 768px)");
+    const onChange = (e) => { if (e.matches) setOpen(false); };
+    desktop.addEventListener("change", onChange);
+    return () => desktop.removeEventListener("change", onChange);
+  }, []);
+
   return (
     <Drawer open={open} onOpenChange={setOpen} side="right">
       <DrawerTrigger render={<Button variant="ghost" size="icon" aria-label="Menüyü aç" />}>
