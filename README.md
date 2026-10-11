@@ -52,6 +52,7 @@
 | Styling | Tailwind CSS v4 (`@tailwindcss/postcss`) |
 | Animation | Framer Motion 12 |
 | Icons | lucide-react |
+| Design system | [`@skylab-kulubu/skylcn-ui`](https://github.com/skylab-kulubu/skylcn-ui) (tokens, Button, NavigationMenu, Drawer) |
 | Fonts | Space Grotesk + JetBrains Mono (`next/font/google`) |
 | QR Generation | `qrcode-generator` (CDN, client-side) |
 | Linting | ESLint 9 + `eslint-config-next` |

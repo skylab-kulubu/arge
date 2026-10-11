@@ -1,22 +1,13 @@
 @import "tailwindcss";
+/* Tokens come from skylcn-ui (ADR 0055); its components need its theme too.
+   This file holds arge's own visual layer: the scrollbar, the atmospheric background,
+   the hero logo, the reveal animations and the stand (/stant) screen. */
+@import "@skylab-kulubu/skylcn-ui/theme.css";
 
 /* Stant ekranındaki kademeli kompaktlaşma için yükseklik bazlı variant'lar */
 @custom-variant short-940 (@media (max-height: 940px));
 @custom-variant short-820 (@media (max-height: 820px));
 @custom-variant short-700 (@media (max-height: 700px));
-
-@theme {
-  --font-sans: var(--font-space-grotesk), 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains-mono), 'JetBrains Mono', ui-monospace, monospace;
-
-  --color-skylab-300: #f3e8f5;
-  --color-skylab-400: #ebd5ee;
-  --color-skylab-500: #e0c8e5;
-  --color-skylab-600: #c8a4ce;
-  --color-skylab-700: #ae7eb6;
-  --color-skylab-800: #8f5e98;
-  --color-skylab-900: #6e4576;
-}
 
 html {
   -webkit-text-size-adjust: 100%;
@@ -37,6 +28,7 @@ body {
   --sb-border: 2px;
 }
 
+/* The site's own scrollbar; unlayered, so it wins over skylcn's scrollbar utility */
 .scrollbar {
   scrollbar-width: thin;
   scrollbar-color: var(--sb-thumb) var(--sb-track);
@@ -45,24 +37,22 @@ body {
 .scrollbar::-webkit-scrollbar-track { background: var(--sb-track); }
 .scrollbar::-webkit-scrollbar-thumb {
   background-color: var(--sb-thumb);
+  background-clip: border-box;
   border-radius: var(--sb-radius);
   border: var(--sb-border) solid var(--sb-track);
 }
 .scrollbar::-webkit-scrollbar-thumb:hover { background-color: var(--sb-thumb-hover); }
 
-/* ─── SKY LAB design system tokens ───────────────────────────────────────── */
+/* The art layer's near-black, a step darker than skylcn's --background */
 :root {
-  --sl-bg:      #08070b;
-  --sl-ink:     #f5f1ec;
-  --sl-accent:  #e0c8e5;
-  --sl-display: var(--font-sans), 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --sl-bg: #08070b;
 }
 
 /* ─── Atmospheric background layers ──────────────────────────────────────── */
 .bg-layers {
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background:
-    radial-gradient(1200px 760px at 78% 10%, rgba(224, 200, 229, 0.10), transparent 60%),
+    radial-gradient(1200px 760px at 78% 10%, color-mix(in srgb, var(--skylab-500) 10%, transparent), transparent 60%),
     radial-gradient(900px  700px at  8% 80%, rgba(170, 140, 200, 0.055), transparent 60%),
     var(--sl-bg);
   opacity: 0;
@@ -82,7 +72,7 @@ body {
   position: fixed; left: 50%; top: -10%; width: 100vw; height: 80vh; z-index: 0; pointer-events: none;
   transform: translate3d(-50%, 0, 0) scale(.2);
   opacity: 0;
-  background: radial-gradient(ellipse at top, rgba(224,200,229,.18), transparent 65%);
+  background: radial-gradient(ellipse at top, color-mix(in srgb, var(--skylab-500) 18%, transparent), transparent 65%);
   animation: bg-iris-in 2.6s cubic-bezier(.16,1,.3,1) .05s forwards;
   will-change: transform, opacity;
 }
@@ -102,10 +92,10 @@ body {
   background-image:
     radial-gradient(1px   1px   at 12% 18%, rgba(255,255,255,.40), transparent 50%),
     radial-gradient(1px   1px   at 28% 62%, rgba(255,255,255,.35), transparent 50%),
-    radial-gradient(1.4px 1.4px at 62%  8%, rgba(224,200,229,.50), transparent 50%),
+    radial-gradient(1.4px 1.4px at 62%  8%, color-mix(in srgb, var(--skylab-500) 50%, transparent), transparent 50%),
     radial-gradient(1px   1px   at 80% 48%, rgba(255,255,255,.40), transparent 50%),
     radial-gradient(1px   1px   at 92% 78%, rgba(255,255,255,.30), transparent 50%),
-    radial-gradient(1.2px 1.2px at 44% 88%, rgba(224,200,229,.40), transparent 50%),
+    radial-gradient(1.2px 1.2px at 44% 88%, color-mix(in srgb, var(--skylab-500) 40%, transparent), transparent 50%),
     radial-gradient(1px   1px   at 18% 92%, rgba(255,255,255,.30), transparent 50%),
     radial-gradient(1.4px 1.4px at 72% 28%, rgba(255,255,255,.40), transparent 50%);
   animation: bg-stars-drift 60s linear infinite;
@@ -114,7 +104,7 @@ body {
   background-image:
     radial-gradient(1px   1px   at 32% 22%, rgba(255,255,255,.30), transparent 50%),
     radial-gradient(1px   1px   at 58% 58%, rgba(255,255,255,.40), transparent 50%),
-    radial-gradient(1px   1px   at  8% 48%, rgba(224,200,229,.35), transparent 50%),
+    radial-gradient(1px   1px   at  8% 48%, color-mix(in srgb, var(--skylab-500) 35%, transparent), transparent 50%),
     radial-gradient(1.4px 1.4px at 88% 18%, rgba(255,255,255,.35), transparent 50%),
     radial-gradient(1px   1px   at 50% 78%, rgba(255,255,255,.25), transparent 50%);
   animation: bg-stars-drift 90s linear infinite reverse;
@@ -123,7 +113,7 @@ body {
 
 .bg-spotlight {
   pointer-events: none; position: fixed; inset: 0; z-index: 1;
-  background: radial-gradient(420px circle at var(--mx,50%) var(--my,50%), rgba(224,200,229,.08), transparent 55%);
+  background: radial-gradient(420px circle at var(--mx,50%) var(--my,50%), color-mix(in srgb, var(--skylab-500) 8%, transparent), transparent 55%);
   transition: opacity .4s;
   transform: translateZ(0);
 }
@@ -177,21 +167,21 @@ body {
   position: absolute; right: -14%; top: 50%;
   width: clamp(720px, 70vw, 1080px); aspect-ratio: 586 / 554;
   transform: translate3d(var(--lx,0px), calc(-50% + var(--ly,0px)), 0);
-  color: var(--sl-accent); opacity: .14; pointer-events: none; z-index: 1;
-  filter: drop-shadow(0 0 80px rgba(224,200,229,.22));
+  color: var(--skylab-500); opacity: .14; pointer-events: none; z-index: 1;
+  filter: drop-shadow(0 0 80px color-mix(in srgb, var(--skylab-500) 22%, transparent));
   transition: transform .6s cubic-bezier(.2,.7,.3,1);
 }
 .hero-logo--bloom { animation: hero-logo-bloom 3.4s cubic-bezier(.2,.7,.3,1) .4s both; }
 @keyframes hero-logo-bloom {
-  0%   { opacity: 0; filter: drop-shadow(0 0 0 rgba(224,200,229,0)) blur(8px); }
-  60%  { opacity: .22; filter: drop-shadow(0 0 100px rgba(224,200,229,.35)) blur(0); }
-  100% { opacity: .14; filter: drop-shadow(0 0  80px rgba(224,200,229,.22)) blur(0); }
+  0%   { opacity: 0; filter: drop-shadow(0 0 0 color-mix(in srgb, var(--skylab-500) 0%, transparent)) blur(8px); }
+  60%  { opacity: .22; filter: drop-shadow(0 0 100px color-mix(in srgb, var(--skylab-500) 35%, transparent)) blur(0); }
+  100% { opacity: .14; filter: drop-shadow(0 0  80px color-mix(in srgb, var(--skylab-500) 22%, transparent)) blur(0); }
 }
 
 .flow-pulse {
   position: absolute; top: 0; left: 0;
   height: 1px; width: 80px;
-  background: linear-gradient(90deg, transparent, rgba(224,200,229,.7), transparent);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--skylab-500) 70%, transparent), transparent);
   animation: flow-pulse-travel 6.5s cubic-bezier(.5,0,.5,1) infinite;
   pointer-events: none;
 }
@@ -212,9 +202,9 @@ body {
   animation: hero-logo-bloom-stant 3.4s cubic-bezier(.2,.7,.3,1) .4s both;
 }
 @keyframes hero-logo-bloom-stant {
-  0%   { opacity: 0; filter: drop-shadow(0 0 0 rgba(224,200,229,0)) blur(8px); }
-  60%  { opacity: .14; filter: drop-shadow(0 0 100px rgba(224,200,229,.35)) blur(0); }
-  100% { opacity: .09; filter: drop-shadow(0 0  80px rgba(224,200,229,.22)) blur(0); }
+  0%   { opacity: 0; filter: drop-shadow(0 0 0 color-mix(in srgb, var(--skylab-500) 0%, transparent)) blur(8px); }
+  60%  { opacity: .14; filter: drop-shadow(0 0 100px color-mix(in srgb, var(--skylab-500) 35%, transparent)) blur(0); }
+  100% { opacity: .09; filter: drop-shadow(0 0  80px color-mix(in srgb, var(--skylab-500) 22%, transparent)) blur(0); }
 }
 
 .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }

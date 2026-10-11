@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import { buttonVariants, cn } from "@skylab-kulubu/skylcn-ui";
 import Script from "next/script";
 import { ArrowLeft, Monitor } from "lucide-react";
 import Background from "../components/Background";
@@ -61,14 +62,7 @@ export default function StantPage() {
 
       <div className="relative z-10 h-screen w-screen flex flex-col items-center justify-center px-6 lg:hidden">
         <div className="max-w-md w-full flex flex-col items-center text-center gap-5">
-          <div
-            className="flex items-center justify-center w-14 h-14 rounded-2xl border"
-            style={{
-              borderColor: "rgba(224,200,229,0.34)",
-              background: "rgba(224,200,229,0.10)",
-              color: "rgb(224,200,229)",
-            }}
-          >
+          <div className="flex items-center justify-center w-14 h-14 rounded-2xl border border-skylab-500/34 bg-skylab-500/10 text-skylab-500">
             <Monitor size={26} strokeWidth={1.5} />
           </div>
 
@@ -85,16 +79,13 @@ export default function StantPage() {
             </p>
           </div>
 
-          <Link
-            href="/"
-            className="group inline-flex items-center gap-2 h-10 px-4 rounded-xl border border-white/10 bg-white/4 hover:bg-white/8 hover:border-white/20 transition-colors font-medium text-[13px] text-neutral-200 hover:text-white mt-2"
-          >
+          <Link href="/" className={cn(buttonVariants({ size: "lg" }), "group mt-2")}>
             <ArrowLeft
               size={14}
               strokeWidth={2}
               className="transition-transform duration-300 group-hover:-translate-x-0.5"
             />
-            <span>Ana Sayfaya Dön</span>
+            Ana Sayfaya Dön
           </Link>
         </div>
       </div>
